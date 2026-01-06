@@ -1,10 +1,11 @@
 # Helios CLI
 
-> **🤖 AI Coding Assistant with Built-in Supervision**
+> **🚀 AI Coding Assistant with 130+ Tools, MCP Support & Multi-Provider Integration**
 
 <p align="center">
   <img src="https://img.shields.io/badge/BridgeMind-Vibeathon-purple?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/Prize-$1000%20BTC-orange?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Tools-130+-blue?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/MCP-Supported-green?style=for-the-badge" />
   <img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" />
 </p>
 
@@ -19,10 +20,24 @@ Built for **[BridgeMind Vibeathon](https://bridgemind.ai/vibeathon)** (Jan 4-14,
 ```bash
 npm install -g helios-cli
 helios config set OPENROUTER_API_KEY sk-or-...
-helios chat
+# Or: helios config set ANTHROPIC_API_KEY sk-ant-...
+helios
 ```
 
 ## ⚡ Features
+
+### 🔄 Multi-Provider Support
+- **OpenRouter** - 100+ models including free ones
+- **Claude** - Native Anthropic API
+- **OpenAI** - Direct GPT access
+- **Streaming** - Real-time responses
+
+### 🔌 MCP Integration
+Connect to Claude Desktop or any MCP client:
+```bash
+helios mcp           # Start MCP server
+helios mcp config    # Show Claude Desktop config
+```
 
 ### 📖 Slash Commands
 Type `/` in chat for an interactive command menu:
@@ -31,37 +46,38 @@ Type `/` in chat for an interactive command menu:
 |---------|-------------|
 | `/help` | Show commands |
 | `/clear` | Clear conversation |
-| `/tools` | List 47+ tools |
-| `/secrets` | Scan for hardcoded API keys |
+| `/tools` | List 130+ tools |
 | `/model` | Change AI model |
+| `/stream` | Toggle streaming |
 | `/status` | Session info |
-| `/git` | Git status |
-| `/project` | Analyze project |
+| `/doctor` | Diagnose issues |
 | `/exit` | Exit Helios |
 
-### 🛠️ 47+ Power Tools
+### 🛠️ 130+ Power Tools
 
 **File Operations**
-- `read_file`, `write_file`, `edit_file`, `append_file`, `delete_file`
-- `list_directory`, `find_files`, `search_files`, `find_and_replace_all`
+- `read_file`, `write_file`, `edit_file`, `delete_file`, `file_diff`, `file_tree`
 
 **Git Integration**
-- `git_status`, `git_diff`, `git_commit`, `git_log`, `git_branch`, `git_stash`, `git_undo`
+- `git_status`, `git_diff`, `git_commit`, `git_log`, `git_branch`, `git_rebase`, `git_cherry_pick`, `git_blame`
 
-**Package Management**
-- `install_package`, `uninstall_package`, `run_script`
-- `audit_packages` - Check for security vulnerabilities (npm/pip/cargo/go)
-- `check_outdated` - Find packages needing updates
+**Database**
+- `query_sqlite`, `query_postgres`, `prisma_generate`, `prisma_migrate`
 
-**Code Generation**
-- `generate_test`, `scaffold_component`, `scaffold_api`, `generate_types`
+**Cloud & DevOps**
+- `docker_build`, `docker_run`, `docker_compose_up`, `vercel_deploy`, `railway_deploy`, `fly_deploy`
 
-**AI-Assisted**
-- `explain_code`, `fix_error`, `suggest_improvements`, `convert_code`, `add_documentation`
+**Testing**
+- `run_jest`, `run_vitest`, `run_pytest`, `playwright_test`, `cypress_run`, `coverage_report`
 
-**Security**
-- `detect_secrets` - Find hardcoded keys and move to .env
-- `audit_packages` - Check npm/pip/cargo for vulnerabilities
+**API & HTTP**
+- `http_get`, `http_post`, `curl_command`, `parse_openapi`
+
+**Code Quality**
+- `format_code`, `lint_code`, `check_types`, `find_duplicates`, `check_complexity`
+
+**Utilities**
+- `uuid_generate`, `hash_text`, `base64_encode`, `timestamp`, `regex_test`, `calc`
 
 ### 🛡️ Supervision Layer
 
@@ -88,16 +104,35 @@ helios ui "modern pricing page"
 ## 📖 Usage
 
 ```bash
-helios                     # Show help
-helios chat                # Interactive mode (type / for menu)
+helios                     # Interactive mode
+helios chat                # Same as above
 helios "fix the bug"       # Single command
 helios ui "dashboard"      # UI generation
+helios doctor              # Check setup
+helios tools               # List tools
+helios mcp                 # Start MCP server
 ```
 
 ## 🔑 Get API Keys
 
-- **OpenRouter**: [openrouter.ai](https://openrouter.ai/keys)
+- **OpenRouter** (Free models): [openrouter.ai](https://openrouter.ai/keys)
+- **Anthropic** (Claude): [console.anthropic.com](https://console.anthropic.com)
 - **V0**: [v0.dev/chat/settings/keys](https://v0.dev/chat/settings/keys)
+
+## 🔌 Claude Desktop Integration
+
+Add Helios to Claude Desktop's MCP config:
+
+```json
+{
+  "mcpServers": {
+    "helios": {
+      "command": "helios",
+      "args": ["mcp"]
+    }
+  }
+}
+```
 
 ## 📄 License
 

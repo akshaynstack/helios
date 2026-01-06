@@ -2,6 +2,8 @@ import chalk from 'chalk';
 import ora from 'ora';
 import gradient from 'gradient-string';
 import * as readline from 'readline';
+import * as fs from 'fs';
+import * as path from 'path';
 import { v0 } from 'v0-sdk';
 import { getV0Key } from './config.js';
 
@@ -58,13 +60,17 @@ Design principles:
 
             spinner.succeed(uiGradient('UI Generated!'));
 
-            console.log('\n' + chalk.bold('📍 View in browser:'));
-            console.log(chalk.cyan(`   ${chat.webUrl || chat.url || 'https://v0.dev'}\n`));
+            const webUrl = chat.webUrl || chat.url || `https://v0.app/chat/${chat.id}`;
 
-            // Show the generated code if available
+            console.log('\n' + chalk.bold('📍 View in browser:'));
+            console.log(chalk.cyan(`   ${webUrl}\n`));
+
             if (chat.id) {
                 console.log(chalk.dim('Chat ID: ' + chat.id));
             }
+
+            // Note: v0-sdk doesn't expose messages API, so we show the browser URL
+            console.log(chalk.dim('\n💡 Open the link above to view and copy the generated code.\n'));
 
         } catch (error: any) {
             spinner.fail(chalk.red('Generation failed'));
