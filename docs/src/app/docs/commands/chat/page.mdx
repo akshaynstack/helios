@@ -1,0 +1,102 @@
+# Chat Command
+
+The `chat` command is the primary way to interact with Helios.
+
+---
+
+## Usage
+
+```bash
+helios chat
+```
+
+Or simply:
+
+```bash
+helios
+```
+
+Both commands start the interactive chat mode.
+
+---
+
+## Single Command Mode
+
+Pass a prompt directly:
+
+```bash
+helios "your request here"
+```
+
+Examples:
+
+```bash
+helios "analyze this project structure"
+```
+
+```bash
+helios "fix the TypeScript errors in src/"
+```
+
+```bash
+helios "create a function to parse JSON files"
+```
+
+---
+
+## Chat Features
+
+### Multi-turn Conversations
+
+Helios maintains context across messages:
+
+```
+You: read the package.json
+Helios: [reads file and summarizes]
+
+You: what dependencies need updating?
+Helios: [analyzes and lists outdated deps]
+
+You: update them all
+Helios: [executes npm update]
+```
+
+### Tool Execution
+
+The AI automatically uses tools based on your requests:
+
+```
+You: show me the git status
+Helios: [executes git_status tool]
+```
+
+### Streaming Responses
+
+Responses stream in real-time for a natural feel. Toggle with:
+
+```
+/stream
+```
+
+---
+
+## Options
+
+| Option | Description |
+|--------|-------------|
+| `--model <name>` | Specify model to use |
+| `--no-stream` | Disable streaming |
+| `--compact` | Enable compact output |
+
+---
+
+## Interactive Commands
+
+During chat, use slash commands:
+
+- `/help` — Show commands
+- `/clear` — Clear history
+- `/model` — Change model
+- `/exit` — Exit chat
+
+See [Slash Commands](/docs/advanced/slash-commands) for full list.

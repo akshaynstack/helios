@@ -1,0 +1,176 @@
+# Slash Commands
+
+Helios provides quick slash commands for common actions during chat sessions.
+
+---
+
+## Using Slash Commands
+
+Type `/` followed by the command name:
+
+```
+/help
+```
+
+Or just type `/` to open the interactive command menu.
+
+---
+
+## Available Commands
+
+export const commands = [
+  { cmd: '/help', desc: 'Show all available commands' },
+  { cmd: '/clear', desc: 'Clear conversation history' },
+  { cmd: '/tools', desc: 'List all available tools' },
+  { cmd: '/model', desc: 'Change the AI model' },
+  { cmd: '/stream', desc: 'Toggle streaming mode' },
+  { cmd: '/status', desc: 'Show session information' },
+  { cmd: '/compact', desc: 'Toggle compact output mode' },
+  { cmd: '/history', desc: 'Show recent actions from audit log' },
+  { cmd: '/project', desc: 'Analyze current project' },
+  { cmd: '/git', desc: 'Show git status' },
+  { cmd: '/todos', desc: 'Find TODO comments in code' },
+  { cmd: '/secrets', desc: 'Scan for hardcoded secrets' },
+  { cmd: '/doctor', desc: 'Diagnose Helios configuration' },
+  { cmd: '/yolo', desc: 'Toggle auto-approve mode' },
+  { cmd: '/exit', desc: 'Exit Helios' },
+];
+
+<div className="overflow-x-auto my-6">
+  <table className="min-w-full border border-zinc-800 rounded-lg overflow-hidden">
+    <thead className="bg-zinc-800">
+      <tr>
+        <th className="text-left text-zinc-200 font-semibold px-4 py-3 text-sm">Command</th>
+        <th className="text-left text-zinc-200 font-semibold px-4 py-3 text-sm">Description</th>
+      </tr>
+    </thead>
+    <tbody className="divide-y divide-zinc-800">
+      {commands.map((c) => (
+        <tr key={c.cmd} className="hover:bg-zinc-800/30 transition-colors">
+          <td className="text-blue-400 font-mono px-4 py-3 text-sm">{c.cmd}</td>
+          <td className="text-zinc-400 px-4 py-3 text-sm">{c.desc}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
+---
+
+## Command Details
+
+### /help
+
+Displays the help menu with all commands:
+
+```
+📖 Available Commands
+
+/help     - Show this help
+/clear    - Clear conversation
+/tools    - List tools
+...
+```
+
+### /clear
+
+Clears the conversation history, giving you a fresh start:
+
+```
+🧹 Conversation cleared
+```
+
+### /model
+
+Opens an interactive model selector:
+
+```
+? Select a model:
+❯ google/gemini-2.0-flash-exp:free
+  anthropic/claude-3-sonnet
+  openai/gpt-4o-mini
+  ...
+```
+
+### /stream
+
+Toggles real-time streaming of responses:
+
+```
+⚡ Streaming: ON
+```
+
+When off, responses appear all at once after completion.
+
+### /status
+
+Shows current session information:
+
+```
+📊 Session Status
+
+Provider: openrouter
+Model: google/gemini-2.0-flash-exp:free
+Messages: 12
+Streaming: ON
+YOLO Mode: OFF
+```
+
+### /compact
+
+Reduces output verbosity:
+
+```
+📦 Compact mode: ON
+```
+
+### /yolo
+
+Toggles auto-approve mode for tool executions:
+
+```
+⚡ YOLO mode: ON
+All tool executions will be auto-approved
+```
+
+> ⚠️ Be careful with YOLO mode — all file and system operations will execute without confirmation.
+
+### /doctor
+
+Runs diagnostic checks:
+
+```
+🏥 Helios Doctor
+
+✓ API Key: Configured
+✓ Model Access: OK
+✓ Tools: 130 loaded
+✓ MCP: Connected
+```
+
+### /exit
+
+Gracefully exits the Helios session:
+
+```
+👋 Goodbye!
+```
+
+---
+
+## Keyboard Shortcuts
+
+In the command menu:
+
+- **↑/↓** — Navigate options
+- **Enter** — Select option
+- **Type** — Filter commands
+- **Esc** — Cancel
+
+---
+
+## Tips
+
+1. **Quick access:** Just type `/` to see all commands
+2. **Search:** Start typing to filter the command list
+3. **Combine with chat:** Use commands between conversations

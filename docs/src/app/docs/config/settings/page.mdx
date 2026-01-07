@@ -1,0 +1,121 @@
+# Settings
+
+Configure Helios behavior and preferences.
+
+---
+
+## Available Settings
+
+export const settings = [
+  { key: 'MODEL', desc: 'Default AI model', example: 'google/gemini-2.0-flash-exp:free' },
+  { key: 'TIMEOUT', desc: 'Request timeout (ms)', example: '60000' },
+  { key: 'MAX_RETRIES', desc: 'Max retry attempts', example: '3' },
+  { key: 'STREAMING', desc: 'Enable streaming', example: 'true' },
+  { key: 'COMPACT_MODE', desc: 'Reduce output verbosity', example: 'false' },
+  { key: 'SHOW_USAGE', desc: 'Show token usage', example: 'false' },
+];
+
+<div className="overflow-x-auto my-6">
+  <table className="min-w-full border border-zinc-800 rounded-lg overflow-hidden">
+    <thead className="bg-zinc-800">
+      <tr>
+        <th className="text-left text-zinc-200 font-semibold px-4 py-3 text-sm">Setting</th>
+        <th className="text-left text-zinc-200 font-semibold px-4 py-3 text-sm">Description</th>
+        <th className="text-left text-zinc-200 font-semibold px-4 py-3 text-sm">Default</th>
+      </tr>
+    </thead>
+    <tbody className="divide-y divide-zinc-800">
+      {settings.map((s) => (
+        <tr key={s.key} className="hover:bg-zinc-800/30 transition-colors">
+          <td className="text-blue-400 font-mono px-4 py-3 text-sm">{s.key}</td>
+          <td className="text-zinc-400 px-4 py-3 text-sm">{s.desc}</td>
+          <td className="text-zinc-500 font-mono px-4 py-3 text-sm">{s.example}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
+---
+
+## Setting Values
+
+```bash
+helios config set <KEY> <value>
+```
+
+### Examples
+
+**Set timeout to 2 minutes:**
+```bash
+helios config set TIMEOUT 120000
+```
+
+**Enable streaming:**
+```bash
+helios config set STREAMING true
+```
+
+**Enable compact mode:**
+```bash
+helios config set COMPACT_MODE true
+```
+
+---
+
+## View Current Settings
+
+```bash
+helios config show
+```
+
+---
+
+## Streaming Mode
+
+When enabled (default), AI responses stream in real-time.
+
+Toggle in chat:
+```
+/stream
+```
+
+Or via config:
+```bash
+helios config set STREAMING false
+```
+
+---
+
+## Compact Mode
+
+Reduces output verbosity for a cleaner experience.
+
+Toggle in chat:
+```
+/compact
+```
+
+Or via config:
+```bash
+helios config set COMPACT_MODE true
+```
+
+---
+
+## Timeout Configuration
+
+Default is 60 seconds (60000ms). Increase for complex tasks:
+
+```bash
+helios config set TIMEOUT 120000
+```
+
+---
+
+## Config File Location
+
+Settings are stored at:
+
+- **macOS/Linux:** `~/.config/helios-cli/config.json`
+- **Windows:** `%APPDATA%\helios-cli\config.json`

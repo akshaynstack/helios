@@ -28,9 +28,10 @@ export function readFile(filepath: string): string {
 
 export function writeFile(filepath: string, content: string): string {
     try {
-        fs.mkdirSync(path.dirname(filepath), { recursive: true });
-        fs.writeFileSync(filepath, content);
-        return `✓ Created ${filepath}`;
+        const absolutePath = path.resolve(filepath);
+        fs.mkdirSync(path.dirname(absolutePath), { recursive: true });
+        fs.writeFileSync(absolutePath, content);
+        return `✓ Created ${absolutePath}`;
     } catch (e: any) {
         return `Error: ${e.message}`;
     }

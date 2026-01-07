@@ -1,0 +1,91 @@
+# MCP Command
+
+The `mcp` command runs Helios as an MCP server for Claude Desktop integration.
+
+---
+
+## Usage
+
+```bash
+helios mcp
+```
+
+Or explicitly:
+
+```bash
+helios mcp serve
+```
+
+---
+
+## Subcommands
+
+| Command | Description |
+|---------|-------------|
+| `helios mcp serve` | Start MCP server (default) |
+| `helios mcp config` | Show Claude Desktop config |
+| `helios mcp list` | List configured MCP servers |
+| `helios mcp add <name> <url>` | Add an MCP server |
+| `helios mcp remove <name>` | Remove an MCP server |
+
+---
+
+## Claude Desktop Setup
+
+Get the configuration snippet:
+
+```bash
+helios mcp config
+```
+
+Output:
+
+```json
+{
+  "mcpServers": {
+    "helios": {
+      "command": "helios",
+      "args": ["mcp"]
+    }
+  }
+}
+```
+
+Add this to your Claude Desktop config file.
+
+---
+
+## Server Mode
+
+When running as an MCP server:
+
+1. Communicates via stdio
+2. Exposes all 130+ tools
+3. Maintains supervision layer
+4. Logs all actions
+
+---
+
+## Managing External Servers
+
+### Add a Server
+
+```bash
+helios mcp add myserver http://localhost:3000
+```
+
+### List Servers
+
+```bash
+helios mcp list
+```
+
+### Remove a Server
+
+```bash
+helios mcp remove myserver
+```
+
+---
+
+See [MCP Integration](/docs/advanced/mcp) for detailed setup guide.

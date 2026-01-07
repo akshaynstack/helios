@@ -1,0 +1,166 @@
+# Supervision Layer
+
+Helios includes a powerful supervision layer that ensures safe and auditable AI operations.
+
+---
+
+## Overview
+
+The supervision layer provides three key features:
+
+1. **Loop Detection** — Prevents infinite loops
+2. **Security Scanner** — Blocks dangerous operations
+3. **Audit Logging** — Records all actions
+
+---
+
+## Loop Detection
+
+The AI can sometimes get stuck repeating the same action. Helios detects this and intervenes.
+
+### How It Works
+
+Helios tracks recent tool calls and their arguments. If it detects repetition:
+
+```
+⚠️ Loop detected: "read_file" repeated 3 times
+Breaking out of potential loop...
+```
+
+### Configuration
+
+The loop detector uses these thresholds:
+
+- **Repeat threshold:** 3 consecutive identical calls
+- **Window size:** Last 10 tool calls
+- **Reset on success:** Counter resets after different tool
+
+---
+
+## Security Scanner
+
+The security scanner analyzes code and commands for dangerous patterns.
+
+### Blocked Patterns
+
+```
+🔒 Security blocked: eval() detected
+```
+
+The scanner checks for:
+
+export const patterns = [
+  { pattern: 'eval()', risk: 'Critical', action: 'Blocked' },
+  { pattern: 'exec()', risk: 'Critical', action: 'Blocked' },
+  { pattern: 'rm -rf /', risk: 'Critical', action: 'Blocked' },
+  { pattern: 'sudo', risk: 'High', action: 'Warning' },
+  { pattern: 'API keys in code', risk: 'Medium', action: 'Warning' },
+  { pattern: 'Hardcoded secrets', risk: 'Medium', action: 'Warning' },
+];
+
+<div className="overflow-x-auto my-6">
+  <table className="min-w-full border border-zinc-800 rounded-lg overflow-hidden">
+    <thead className="bg-zinc-800">
+      <tr>
+        <th className="text-left text-zinc-200 font-semibold px-4 py-3 text-sm">Pattern</th>
+        <th className="text-left text-zinc-200 font-semibold px-4 py-3 text-sm">Risk Level</th>
+        <th className="text-left text-zinc-200 font-semibold px-4 py-3 text-sm">Action</th>
+      </tr>
+    </thead>
+    <tbody className="divide-y divide-zinc-800">
+      {patterns.map((p) => (
+        <tr key={p.pattern} className="hover:bg-zinc-800/30 transition-colors">
+          <td className="text-blue-400 font-mono px-4 py-3 text-sm">{p.pattern}</td>
+          <td className="text-zinc-400 px-4 py-3 text-sm">{p.risk}</td>
+          <td className="text-zinc-400 px-4 py-3 text-sm">{p.action}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
+### Customization
+
+The scanner is built into the core and cannot be disabled for safety.
+
+---
+
+## Audit Logging
+
+Every tool execution is logged for accountability and debugging.
+
+### Log Location
+
+```
+~/.helios/audit.jsonl
+```
+
+### Log Format
+
+Each line is a JSON object:
+
+```json
+{
+  "timestamp": "2026-01-07T08:45:23.456Z",
+  "tool": "write_file",
+  "args": {
+    "path": "/project/src/utils.ts",
+    "content": "..."
+  },
+  "result": "success",
+  "duration_ms": 45
+}
+```
+
+### Viewing Logs
+
+In chat mode:
+
+```
+/history
+```
+
+Or read the file directly:
+
+```bash
+tail -f ~/.helios/audit.jsonl
+```
+
+---
+
+## Permission System
+
+Helios asks for permission before executing certain tools:
+
+### Always Requires Permission
+
+- Writing/deleting files
+- Executing shell commands
+- Making network requests
+- Git operations that modify state
+
+### Auto-Approved
+
+- Reading files
+- Listing directories
+- Git status/diff (read-only)
+- Utility functions (uuid, hash, etc.)
+
+### YOLO Mode
+
+Skip all permission prompts:
+
+```
+/yolo
+```
+
+> ⚠️ Use with caution in production environments.
+
+---
+
+## Best Practices
+
+1. **Review audit logs** regularly in production
+2. **Keep YOLO mode off** for sensitive projects
+3. **Check security warnings** before approving
+4. **Use in sandboxed environments** when testing AI capabilities

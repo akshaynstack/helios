@@ -25,6 +25,6 @@ export const handlers: Record<string, ToolHandler> = {
     },
     run_script: (args) => safeExec(`npm run ${args.script}`),
     npm_init: (args) => safeExec(`npm init -y && npm pkg set name="${args.name}"`),
-    audit_packages: (args) => safeExec('npm audit 2>&1 || true', args.path),
-    check_outdated: (args) => safeExec('npm outdated 2>&1 || true', args.path)
+    audit_packages: (args) => safeExec('npm audit', args.path),
+    check_outdated: (args) => safeExec('npm outdated', args.path)
 };

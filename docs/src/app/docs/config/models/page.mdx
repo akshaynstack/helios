@@ -1,0 +1,151 @@
+# Models Configuration
+
+Configure AI models and providers for Helios.
+
+---
+
+## Changing Models
+
+Use the `/model` command in chat mode:
+
+```
+/model
+```
+
+This will:
+1. Show available providers (based on your configured API keys)
+2. Fetch models from the selected provider
+3. Let you search and select a model
+
+---
+
+## Supported Providers
+
+export const providers = [
+  { name: 'OpenRouter', models: '100+ models', key: 'OPENROUTER_API_KEY' },
+  { name: 'OpenAI', models: 'GPT-4, GPT-4o, etc.', key: 'OPENAI_API_KEY' },
+  { name: 'Anthropic', models: 'Claude 3/4 family', key: 'ANTHROPIC_API_KEY' },
+  { name: 'Google', models: 'Gemini models', key: 'GOOGLE_API_KEY' },
+  { name: 'Custom', models: 'Any OpenAI-compatible', key: 'CUSTOM_BASE_URL' },
+];
+
+<div className="overflow-x-auto my-6">
+  <table className="min-w-full border border-zinc-800 rounded-lg overflow-hidden">
+    <thead className="bg-zinc-800">
+      <tr>
+        <th className="text-left text-zinc-200 font-semibold px-4 py-3 text-sm">Provider</th>
+        <th className="text-left text-zinc-200 font-semibold px-4 py-3 text-sm">Models</th>
+        <th className="text-left text-zinc-200 font-semibold px-4 py-3 text-sm">Config Key</th>
+      </tr>
+    </thead>
+    <tbody className="divide-y divide-zinc-800">
+      {providers.map((p) => (
+        <tr key={p.name} className="hover:bg-zinc-800/30 transition-colors">
+          <td className="text-zinc-300 font-medium px-4 py-3 text-sm">{p.name}</td>
+          <td className="text-zinc-400 px-4 py-3 text-sm">{p.models}</td>
+          <td className="text-blue-400 font-mono px-4 py-3 text-sm">{p.key}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
+---
+
+## Setting Up Providers
+
+### OpenRouter (Recommended)
+
+Access 100+ models including free options:
+
+```bash
+helios config set OPENROUTER_API_KEY sk-or-v1-...
+```
+
+Get a key at [openrouter.ai/keys](https://openrouter.ai/keys)
+
+### OpenAI
+
+Direct access to GPT models:
+
+```bash
+helios config set OPENAI_API_KEY sk-...
+```
+
+### Anthropic
+
+Claude models via direct API:
+
+```bash
+helios config set ANTHROPIC_API_KEY sk-ant-...
+```
+
+### Google
+
+Gemini models:
+
+```bash
+helios config set GOOGLE_API_KEY ...
+```
+
+---
+
+## Custom Providers
+
+Add any OpenAI-compatible endpoint (Ollama, LM Studio, vLLM, etc.):
+
+```bash
+# Add a custom provider
+helios provider add http://localhost:11434/v1
+
+# With API key (if required)
+helios provider add https://my-server.com/v1 my-api-key
+
+# Remove custom provider
+helios provider remove
+
+# Show all providers
+helios provider show
+```
+
+### Common Custom Providers
+
+**Ollama:**
+```bash
+helios provider add http://localhost:11434/v1
+```
+
+**LM Studio:**
+```bash
+helios provider add http://localhost:1234/v1
+```
+
+**vLLM:**
+```bash
+helios provider add http://localhost:8000/v1
+```
+
+---
+
+## Default Model
+
+Set a default model to use:
+
+```bash
+helios config set MODEL google/gemini-2.0-flash-exp:free
+```
+
+Or use `/model` in chat mode to select interactively.
+
+---
+
+## Free Models
+
+With OpenRouter, several models are free:
+
+- `google/gemini-2.0-flash-exp:free` — Google Gemini Flash
+- `meta-llama/llama-3.3-70b-instruct:free` — Meta Llama 3.3
+- `deepseek/deepseek-chat:free` — DeepSeek V3
+- `qwen/qwen-2-7b-instruct:free` — Qwen 2
+
+Free models show with a 🆓 icon in the model selector.

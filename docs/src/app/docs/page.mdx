@@ -1,0 +1,95 @@
+# Introduction
+
+Welcome to **Helios Engine** — the flow-state AI power tool built for **Vibecoders**. 
+
+Helios isn't just another chat interface; it's a high-performance orchestration engine designed to stay out of your way while providing instant, elite-level context through a suite of Rust-powered tools and proactive automation.
+
+---
+
+## The Vibecoder Philosophy
+
+Helios is designed for developers who value **flow, speed, and intuition**. It eliminates the common friction points of AI assistance:
+
+- **Ultra-Fast Context**: Integrated `ripgrep`, `fd`, and `mgrep` for near-instant search and discovery.
+- **Zero Interruption**: Proactive installers set up your environment silently in the background.
+- **Transparent Power**: Real-time analytics proving exactly how much manual effort is automated.
+- **Unstoppable Logic**: Smart fallbacks for tool-calls and multi-provider model mapping.
+
+---
+
+## High-Performance Core
+
+### ⚡ Triple-Threat Search
+Helios uses the world's fastest search tools to feed context to the AI:
+- **Exact Search (Ripgrep)**: Finds any pattern in milliseconds.
+- **File Discovery (fd)**: Maps your project structure instantly.
+- **Semantic Search (mgrep)**: Finds code by meaning (e.g., "where is the payment logic?").
+
+### 🛡️ Proactive Autopilot
+Helios auto-installs its own performance binaries (`rg`, `fd`, `mgrep`, `playwright`) silently. You stay in the flow; Helios handles the setup.
+
+### 📊 Engine Analytics
+Every session includes a productivity proof-of-work:
+- **Engine Power**: See your optimization status.
+- **Context Swaps Avoided**: Know exactly how much manual labor was saved.
+
+### 🛠️ 130+ Power Tools
+
+Helios comes with tools organized in categories:
+
+export const categories = [
+  { name: 'File Operations', tools: 'read, write, edit, delete, diff, tree' },
+  { name: 'Git Integration', tools: 'status, diff, commit, log, branch, rebase' },
+  { name: 'Shell Commands', tools: 'execute, background, script' },
+  { name: 'NPM & Package', tools: 'install, run, audit, outdated' },
+  { name: 'Cloud & DevOps', tools: 'docker, vercel, railway, fly' },
+  { name: 'Utilities', tools: 'uuid, hash, base64, timestamp' },
+];
+
+<div className="overflow-x-auto my-6">
+  <table className="min-w-full border border-zinc-800 rounded-lg overflow-hidden">
+    <thead className="bg-zinc-800">
+      <tr>
+        <th className="text-left text-zinc-200 font-semibold px-4 py-3 text-sm">Category</th>
+        <th className="text-left text-zinc-200 font-semibold px-4 py-3 text-sm">Tools</th>
+      </tr>
+    </thead>
+    <tbody className="divide-y divide-zinc-800">
+      {categories.map((c) => (
+        <tr key={c.name} className="hover:bg-zinc-800/30 transition-colors">
+          <td className="text-zinc-300 font-medium px-4 py-3 text-sm">{c.name}</td>
+          <td className="text-zinc-400 px-4 py-3 text-sm">{c.tools}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
+### 🛡️ Supervision Layer
+
+Built-in safety features:
+
+- **Loop Detection** — Stops AI when it repeats actions
+- **Security Scanner** — Blocks dangerous code patterns
+- **Audit Logging** — All actions saved to `~/.helios/audit.jsonl`
+
+---
+
+## Quick Start
+
+```bash
+npm install -g helios-cli
+helios config set OPENROUTER_API_KEY sk-or-...
+helios
+```
+
+That's it! You're ready to start coding with AI assistance.
+
+---
+
+## Next Steps
+
+- [Installation Guide](/docs/installation) — Detailed setup instructions
+- [Quick Start](/docs/quickstart) — Your first Helios session
+- [API Keys Configuration](/docs/config/api-keys) — Set up providers
+- [Tools Overview](/docs/tools) — Explore available tools

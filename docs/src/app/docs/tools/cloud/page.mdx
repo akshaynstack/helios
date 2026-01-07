@@ -1,0 +1,133 @@
+# Cloud & DevOps Tools
+
+Deploy and manage cloud infrastructure.
+
+---
+
+## Available Tools
+
+export const tools = [
+  { name: 'docker_build', desc: 'Build Docker image', args: 'dockerfile, tag' },
+  { name: 'docker_run', desc: 'Run Docker container', args: 'image, options' },
+  { name: 'docker_compose_up', desc: 'Start docker-compose', args: 'file' },
+  { name: 'docker_compose_down', desc: 'Stop docker-compose', args: 'file' },
+  { name: 'docker_ps', desc: 'List containers', args: '-' },
+  { name: 'docker_logs', desc: 'View container logs', args: 'container' },
+  { name: 'vercel_deploy', desc: 'Deploy to Vercel', args: 'options' },
+  { name: 'railway_deploy', desc: 'Deploy to Railway', args: 'options' },
+  { name: 'fly_deploy', desc: 'Deploy to Fly.io', args: 'options' },
+];
+
+<div className="overflow-x-auto my-6">
+  <table className="min-w-full border border-zinc-800 rounded-lg overflow-hidden">
+    <thead className="bg-zinc-800">
+      <tr>
+        <th className="text-left text-zinc-200 font-semibold px-4 py-3 text-sm">Tool</th>
+        <th className="text-left text-zinc-200 font-semibold px-4 py-3 text-sm">Description</th>
+        <th className="text-left text-zinc-200 font-semibold px-4 py-3 text-sm">Arguments</th>
+      </tr>
+    </thead>
+    <tbody className="divide-y divide-zinc-800">
+      {tools.map((t) => (
+        <tr key={t.name} className="hover:bg-zinc-800/30 transition-colors">
+          <td className="text-blue-400 font-mono px-4 py-3 text-sm">{t.name}</td>
+          <td className="text-zinc-400 px-4 py-3 text-sm">{t.desc}</td>
+          <td className="text-zinc-500 font-mono px-4 py-3 text-sm">{t.args}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
+---
+
+## Docker Examples
+
+### Building Images
+
+```
+build a Docker image for this Node.js app
+```
+
+```
+create a Dockerfile for a Python Flask app
+```
+
+### Running Containers
+
+```
+run the postgres image with port 5432 exposed
+```
+
+```
+start the docker-compose stack
+```
+
+### Managing Containers
+
+```
+show running containers
+```
+
+```
+show logs for the api container
+```
+
+---
+
+## Deployment Examples
+
+### Vercel
+
+```
+deploy this Next.js app to Vercel
+```
+
+### Railway
+
+```
+deploy to Railway
+```
+
+### Fly.io
+
+```
+deploy to Fly.io
+```
+
+---
+
+## Prerequisites
+
+Make sure you have the required CLIs installed:
+
+- **Docker** — `docker` and `docker-compose`
+- **Vercel** — `npm i -g vercel`
+- **Railway** — `npm i -g @railway/cli`
+- **Fly.io** — Install from [fly.io](https://fly.io)
+
+---
+
+## Authentication
+
+Cloud platforms require authentication:
+
+```bash
+# Vercel
+vercel login
+
+# Railway
+railway login
+
+# Fly.io
+fly auth login
+```
+
+---
+
+## Best Practices
+
+1. **Test locally** before deploying
+2. **Use environment variables** for secrets
+3. **Review deployment config** before confirming
+4. **Check logs** after deployment

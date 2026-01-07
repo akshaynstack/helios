@@ -1,0 +1,125 @@
+# Installation
+
+Get Helios CLI up and running in minutes.
+
+---
+
+## Requirements
+
+- **Node.js** 20.x or later
+- **npm** or **pnpm** or **yarn**
+- An API key from one of the supported providers
+
+---
+
+## Global Installation
+
+The recommended way to install Helios is globally via npm:
+
+```bash
+npm install -g helios-cli
+```
+
+Verify the installation:
+
+```bash
+helios --version
+```
+
+You should see output like:
+
+```
+██╗  ██╗███████╗██╗     ██╗ ██████╗ ███████╗
+██║  ██║██╔════╝██║     ██║██╔═══██╗██╔════╝
+███████║█████╗  ██║     ██║██║   ██║███████╗
+██╔══██║██╔══╝  ██║     ██║██║   ██║╚════██║
+██║  ██║███████╗███████╗██║╚██████╔╝███████║
+╚═╝  ╚═╝╚══════╝╚══════╝╚═╝ ╚═════╝ ╚══════╝
+
+0.2.0
+```
+
+---
+
+## Alternative Package Managers
+
+### Using pnpm
+
+```bash
+pnpm add -g helios-cli
+```
+
+### Using yarn
+
+```bash
+yarn global add helios-cli
+```
+
+---
+
+## From Source
+
+For development or contributing:
+
+```bash
+git clone https://github.com/akshaynstack/helios.git
+cd helios
+npm install
+npm run build
+npm link
+```
+
+---
+
+## Configure API Keys
+
+Helios needs at least one API key to work. Set up your preferred provider:
+
+### OpenRouter (Recommended)
+
+OpenRouter provides access to 100+ models, including free options:
+
+```bash
+helios config set OPENROUTER_API_KEY sk-or-v1-xxxx
+```
+
+Get your key at [openrouter.ai/keys](https://openrouter.ai/keys)
+
+### Anthropic Claude
+
+```bash
+helios config set ANTHROPIC_API_KEY sk-ant-xxxx
+```
+
+Get your key at [console.anthropic.com](https://console.anthropic.com)
+
+### OpenAI
+
+```bash
+helios config set OPENAI_API_KEY sk-xxxx
+```
+
+Get your key at [platform.openai.com](https://platform.openai.com)
+
+---
+
+## Verify Setup
+
+Run the doctor command to check your configuration:
+
+```bash
+helios doctor
+```
+
+This will verify:
+- ✅ API keys are configured
+- ✅ Models are accessible
+- ✅ Tools are loaded
+- ✅ MCP servers are connected
+
+---
+
+## Next Steps
+
+- [Quick Start Guide](/docs/quickstart) — Your first Helios session
+- [Configure Models](/docs/config/models) — Choose your default model
