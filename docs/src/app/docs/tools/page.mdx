@@ -1,0 +1,158 @@
+# Tools Overview
+
+Helios comes with **130+ built-in tools** organized into categories. The AI automatically selects and uses the right tools based on your requests.
+
+---
+
+## Tool Categories
+
+export const toolCategories = [
+  { name: 'File Operations', desc: 'Read, write, edit, delete files', count: '10+' },
+  { name: 'Git Integration', desc: 'Version control operations', count: '12+' },
+  { name: 'Shell & Process', desc: 'Execute commands, scripts', count: '8+' },
+  { name: 'NPM & Package', desc: 'Package management', count: '6+' },
+  { name: 'Cloud & DevOps', desc: 'Docker, Vercel, Railway', count: '10+' },
+  { name: 'Browser', desc: 'Web automation with Playwright', count: '8+' },
+  { name: 'AI & Generation', desc: 'Image gen, embeddings', count: '4+' },
+  { name: 'Utilities', desc: 'UUID, hash, encoding', count: '15+' },
+];
+
+<div className="overflow-x-auto my-6">
+  <table className="min-w-full border border-zinc-800 rounded-lg overflow-hidden">
+    <thead className="bg-zinc-800">
+      <tr>
+        <th className="text-left text-zinc-200 font-semibold px-4 py-3 text-sm">Category</th>
+        <th className="text-left text-zinc-200 font-semibold px-4 py-3 text-sm">Description</th>
+        <th className="text-left text-zinc-200 font-semibold px-4 py-3 text-sm">Tools</th>
+      </tr>
+    </thead>
+    <tbody className="divide-y divide-zinc-800">
+      {toolCategories.map((c) => (
+        <tr key={c.name} className="hover:bg-zinc-800/30 transition-colors">
+          <td className="text-zinc-300 font-medium px-4 py-3 text-sm">{c.name}</td>
+          <td className="text-zinc-400 px-4 py-3 text-sm">{c.desc}</td>
+          <td className="text-blue-400 px-4 py-3 text-sm">{c.count}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
+---
+
+## How Tools Work
+
+When you ask Helios to do something, it:
+
+1. **Analyzes** your request
+2. **Selects** appropriate tools
+3. **Requests permission** (unless in YOLO mode)
+4. **Executes** the tools
+5. **Reports** the results
+
+---
+
+## Viewing Available Tools
+
+List all tools in the CLI:
+
+```bash
+helios tools
+```
+
+Or in chat mode:
+
+```
+/tools
+```
+
+---
+
+## Tool Permissions
+
+Helios asks for permission before executing tools that:
+
+- Modify files
+- Execute shell commands
+- Make network requests
+- Access system resources
+
+Use `/yolo` mode to skip permission prompts.
+
+---
+
+## Tool Categories Deep Dive
+
+### File Operations
+
+Essential file manipulation tools:
+
+- `read_file` — Read file contents
+- `write_file` — Create or overwrite files
+- `edit_file` — Make targeted edits
+- `delete_file` — Remove files
+- `file_diff` — Compare files
+- `file_tree` — Directory structure
+
+[Explore File Tools →](/docs/tools/file)
+
+### Git Integration
+
+Comprehensive Git support:
+
+- `git_status` — Working directory status
+- `git_diff` — Show changes
+- `git_commit` — Commit changes
+- `git_log` — Commit history
+- `git_branch` — Branch operations
+- `git_rebase` — Rebase commits
+
+[Explore Git Tools →](/docs/tools/git)
+
+### Shell Commands
+
+Execute system commands:
+
+- `shell_execute` — Run commands
+- `shell_script` — Multi-line scripts
+- `background_process` — Long-running tasks
+
+[Explore Shell Tools →](/docs/tools/shell)
+
+### Browser Automation
+
+Web automation with Playwright:
+
+- `browser_open` — Open URLs
+- `browser_click` — Click elements
+- `browser_type` — Input text
+- `browser_screenshot` — Capture pages
+
+[Explore Browser Tools →](/docs/tools/browser)
+
+### Cloud & DevOps
+
+Deploy and manage infrastructure:
+
+- `docker_build` — Build images
+- `docker_run` — Run containers
+- `vercel_deploy` — Deploy to Vercel
+- `railway_deploy` — Deploy to Railway
+
+[Explore Cloud Tools →](/docs/tools/cloud)
+
+---
+
+## Custom Tool Usage
+
+You can be specific about which tools to use:
+
+```
+use the file_tree tool to show me the project structure
+```
+
+```
+use git_log to show the last 10 commits
+```
+
+The AI will prioritize the tools you mention.

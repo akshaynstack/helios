@@ -16,18 +16,30 @@ interface ConfigSchema {
     GOOGLE_API_KEY: string;
     V0_API_KEY: string;
 
+    // Custom Provider (OpenAI-compatible)
+    CUSTOM_BASE_URL: string;
+    CUSTOM_API_KEY: string;
+
     // Model Settings
     MODEL: string;
     TIMEOUT: number;
     MAX_RETRIES: number;
+    MAX_ITERATIONS: number;
+    MXBAI_API_KEY: string;
+    USE_RIPGREP: boolean;
+    USE_FD: boolean;
     STREAMING: boolean;
 
     // MCP
     MCP_SERVERS: MCPServerConfig[];
 
+    // Provider Settings
+    ACTIVE_PROVIDER: ProviderType;
+
     // UI
     COMPACT_MODE: boolean;
     SHOW_USAGE: boolean;
+    DEBUG_MODE: boolean;
 }
 
 export const config = new Conf<ConfigSchema>({
@@ -38,17 +50,55 @@ export const config = new Conf<ConfigSchema>({
         ANTHROPIC_API_KEY: '',
         GOOGLE_API_KEY: '',
         V0_API_KEY: '',
+        CUSTOM_BASE_URL: '',
+        CUSTOM_API_KEY: '',
         MODEL: 'google/gemini-2.0-flash-exp:free',
         TIMEOUT: 60000,
         MAX_RETRIES: 3,
+        MAX_ITERATIONS: 30,
+        MXBAI_API_KEY: '',
+        USE_RIPGREP: true,
+        USE_FD: true,
         STREAMING: true,
         MCP_SERVERS: [],
+        ACTIVE_PROVIDER: 'none',
         COMPACT_MODE: false,
-        SHOW_USAGE: false
+        SHOW_USAGE: false,
+        DEBUG_MODE: false
     }
 });
 
-export function getApiKey(): { key: string; provider: 'openrouter' | 'openai' | 'anthropic' | 'google' | 'none' } {
+export type ProviderType = 'custom' | 'openrouter' | 'openai' | 'anthropic' | 'google' | 'none';
+
+export function getApiKey(): { key: string; provider: ProviderType; baseUrl?: string } {
+    const activeProvider = config.get('ACTIVE_PROVIDER');
+
+    // If a provider is explicitly active, try to use it
+    if (activeProvider && activeProvider !== 'none') {
+        if (activeProvider === 'custom') {
+            const customUrl = config.get('CUSTOM_BASE_URL');
+            const customKey = config.get('CUSTOM_API_KEY');
+            if (customUrl && customKey) return { key: customKey, provider: 'custom', baseUrl: customUrl };
+        } else if (activeProvider === 'anthropic') {
+            const key = config.get('ANTHROPIC_API_KEY');
+            if (key) return { key, provider: 'anthropic' };
+        } else if (activeProvider === 'openrouter') {
+            const key = config.get('OPENROUTER_API_KEY');
+            if (key) return { key, provider: 'openrouter' };
+        } else if (activeProvider === 'openai') {
+            const key = config.get('OPENAI_API_KEY');
+            if (key) return { key, provider: 'openai' };
+        } else if (activeProvider === 'google') {
+            const key = config.get('GOOGLE_API_KEY');
+            if (key) return { key, provider: 'google' };
+        }
+    }
+
+    // Fallback to auto-detection (original logic)
+    const customUrl = config.get('CUSTOM_BASE_URL');
+    const customKey = config.get('CUSTOM_API_KEY');
+    if (customUrl && customKey) return { key: customKey, provider: 'custom', baseUrl: customUrl };
+
     const anthropic = config.get('ANTHROPIC_API_KEY');
     if (anthropic) return { key: anthropic, provider: 'anthropic' };
 

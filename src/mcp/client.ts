@@ -1,200 +1,184 @@
 /**
  * Helios MCP Client - Connect to external MCP servers
- * Discovers and uses tools from MCP servers
+ * Uses @modelcontextprotocol/sdk for robust Stdio and SSE support
  */
 
+import { Client } from "@modelcontextprotocol/sdk/client/index.js";
+import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
+import { SSEClientTransport } from "@modelcontextprotocol/sdk/client/sse.js";
+import { Transport } from "@modelcontextprotocol/sdk/shared/transport.js";
 import { getMCPServers } from '../config.js';
-import type { Tool, MCPTool, MCPResource } from '../types.js';
+import type { Tool } from '../types.js';
 
 interface MCPConnection {
     name: string;
+    client: Client;
+    transport: Transport;
     status: 'connected' | 'disconnected' | 'error';
-    tools: MCPTool[];
-    resources: MCPResource[];
+    tools: Tool[];
     error?: string;
-}
-
-interface MCPListToolsResponse {
-    tools: MCPTool[];
-}
-
-interface MCPListResourcesResponse {
-    resources: MCPResource[];
-}
-
-interface MCPCallToolResponse {
-    content: Array<{ type: string; text?: string; data?: string }>;
-    isError?: boolean;
 }
 
 export class MCPClient {
     private connections: Map<string, MCPConnection> = new Map();
 
     /**
-     * Connect to all configured MCP servers
+     * Connect to all configured MCP servers + Auto-connect to presets
      */
     async connectAll(): Promise<void> {
         const servers = getMCPServers();
+        console.log(`[MCP] Connecting to ${servers.length} servers...`);
 
         for (const server of servers) {
             try {
-                await this.connect(server.name, server.url || '');
+                await this.connect(server.name, server.url || '', server.command, server.args);
             } catch (error: any) {
-                console.error(`Failed to connect to MCP server ${server.name}: ${error.message}`);
+                console.error(`[MCP] Failed to connect to ${server.name}: ${error.message}`);
             }
         }
     }
 
     /**
-     * Connect to a single MCP server via HTTP/SSE
+     * Connect to a single MCP server (Stdio or SSE)
      */
-    async connect(name: string, url: string): Promise<MCPConnection> {
-        const connection: MCPConnection = {
-            name,
-            status: 'disconnected',
-            tools: [],
-            resources: []
-        };
+    async connect(name: string, url: string, command?: string, args?: string[]): Promise<MCPConnection | null> {
+        // cleanup existing
+        if (this.connections.has(name)) {
+            const old = this.connections.get(name);
+            try { await old?.client.close(); } catch { }
+            this.connections.delete(name);
+        }
+
+        let transport: Transport;
 
         try {
-            // List tools from the server
-            const toolsResponse = await fetch(`${url}/tools`, {
-                method: 'GET',
-                headers: { 'Content-Type': 'application/json' }
-            });
-
-            if (toolsResponse.ok) {
-                const data = await toolsResponse.json() as MCPListToolsResponse;
-                connection.tools = data.tools || [];
+            if (command) {
+                // Stdio Transport (e.g. npx -y @21st-dev/magic)
+                transport = new StdioClientTransport({
+                    command: command,
+                    args: args || []
+                });
+            } else if (url && (url.startsWith('http') || url.startsWith('sse'))) {
+                // SSE Transport
+                transport = new SSEClientTransport(new URL(url));
+            } else {
+                throw new Error(`Invalid config for ${name}: must have url or command`);
             }
 
-            // List resources
-            const resourcesResponse = await fetch(`${url}/resources`, {
-                method: 'GET',
-                headers: { 'Content-Type': 'application/json' }
-            });
+            const client = new Client(
+                {
+                    name: "helios-client",
+                    version: "1.0.0",
+                },
+                {
+                    capabilities: {
+                        // Clients don't provide tools, they consume them
+                        roots: { listChanged: false }
+                    },
+                }
+            );
 
-            if (resourcesResponse.ok) {
-                const data = await resourcesResponse.json() as MCPListResourcesResponse;
-                connection.resources = data.resources || [];
-            }
+            await client.connect(transport);
 
-            connection.status = 'connected';
+            // Fetch tools
+            const toolsResult = await client.listTools();
+            const tools: Tool[] = toolsResult.tools.map(t => ({
+                name: `${name}__${t.name}`,
+                description: `[${name}] ${t.description || ''}`,
+                parameters: {
+                    type: 'object',
+                    properties: t.inputSchema?.properties as any || {},
+                    required: t.inputSchema?.required || []
+                }
+            }));
+
+            const connection: MCPConnection = {
+                name,
+                client,
+                transport,
+                status: 'connected',
+                tools
+            };
+
+            this.connections.set(name, connection);
+            // console.log(`[MCP] Connected to ${name} (${tools.length} tools)`);
+            return connection;
+
         } catch (error: any) {
-            connection.status = 'error';
-            connection.error = error.message;
+            console.error(`[MCP] Error connecting to ${name}:`, error);
+            this.connections.set(name, {
+                name,
+                client: null as any,
+                transport: null as any,
+                status: 'error',
+                tools: [],
+                error: error.message
+            });
+            return null;
         }
-
-        this.connections.set(name, connection);
-        return connection;
-    }
-
-    /**
-     * Disconnect from a server
-     */
-    disconnect(name: string): void {
-        this.connections.delete(name);
     }
 
     /**
      * Get all tools from all connected servers
      */
     getAllTools(): Tool[] {
-        const tools: Tool[] = [];
-
-        for (const [serverName, connection] of this.connections) {
-            if (connection.status !== 'connected') continue;
-
-            for (const mcpTool of connection.tools) {
-                tools.push({
-                    name: `${serverName}__${mcpTool.name}`,
-                    description: `[${serverName}] ${mcpTool.description}`,
-                    parameters: {
-                        type: 'object',
-                        properties: mcpTool.inputSchema?.properties as Record<string, { type: string; description: string }> || {},
-                        required: mcpTool.inputSchema?.required || []
-                    }
-                });
+        const allTools: Tool[] = [];
+        for (const conn of this.connections.values()) {
+            if (conn.status === 'connected') {
+                allTools.push(...conn.tools);
             }
         }
-
-        return tools;
+        return allTools;
     }
 
     /**
      * Call a tool on an MCP server
      */
-    async callTool(fullName: string, args: Record<string, unknown>): Promise<string> {
-        const parts = fullName.split('__');
-        if (parts.length < 2) {
-            throw new Error(`Invalid MCP tool name: ${fullName}`);
-        }
+    async callTool(fullName: string, args: any): Promise<string> {
+        const [serverName, ...rest] = fullName.split('__');
+        const toolName = rest.join('__');
 
-        const serverName = parts[0];
-        const toolName = parts.slice(1).join('__');
-
-        const connection = this.connections.get(serverName);
-        if (!connection) {
-            throw new Error(`Not connected to MCP server: ${serverName}`);
-        }
-
-        const server = getMCPServers().find(s => s.name === serverName);
-        if (!server?.url) {
-            throw new Error(`No URL configured for MCP server: ${serverName}`);
+        const conn = this.connections.get(serverName);
+        if (!conn || conn.status !== 'connected') {
+            throw new Error(`MCP server ${serverName} is not connected`);
         }
 
         try {
-            const response = await fetch(`${server.url}/tools/call`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    name: toolName,
-                    arguments: args
-                })
-            });
+            const result = await conn.client.callTool({
+                name: toolName,
+                arguments: args
+            }) as any; // Cast to any to avoid strict type issues with content iteration
 
-            const data = await response.json() as MCPCallToolResponse;
-
-            if (data.isError) {
-                throw new Error(data.content?.[0]?.text || 'MCP tool call failed');
+            // Parse result content
+            let output = '';
+            if (result.content && Array.isArray(result.content)) {
+                for (const item of result.content) {
+                    if (item.type === 'text') {
+                        output += item.text + '\n';
+                    } else {
+                        output += `[${item.type} content]\n`;
+                    }
+                }
             }
 
-            // Extract text content
-            const textContent = data.content
-                ?.filter((c: any) => c.type === 'text')
-                .map((c: any) => c.text)
-                .join('\n');
+            return output || JSON.stringify(result);
 
-            return textContent || JSON.stringify(data.content);
         } catch (error: any) {
             throw new Error(`MCP tool call failed: ${error.message}`);
         }
     }
 
     /**
-     * Check if a tool name is from an MCP server
+     * Get tool documentation specifically for "Knowledge Feed"
      */
-    isMCPTool(name: string): boolean {
-        return name.includes('__');
-    }
+    getToolDocs(serverName: string): string {
+        const conn = this.connections.get(serverName);
+        if (!conn || conn.status !== 'connected') return '';
 
-    /**
-     * Get connection status for all servers
-     */
-    getStatus(): Array<{ name: string; status: string; toolCount: number }> {
-        const result: Array<{ name: string; status: string; toolCount: number }> = [];
-
-        for (const [name, connection] of this.connections) {
-            result.push({
-                name,
-                status: connection.status,
-                toolCount: connection.tools.length
-            });
-        }
-
-        return result;
+        return conn.tools.map(t =>
+            `## ${t.name}\n${t.description}\nArgs: ${JSON.stringify(t.parameters)}`
+        ).join('\n\n');
     }
 }
 
-// Singleton instance
 export const mcpClient = new MCPClient();

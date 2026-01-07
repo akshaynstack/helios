@@ -1,0 +1,175 @@
+# Quick Start
+
+Get productive with Helios in under 5 minutes.
+
+---
+
+## Start Interactive Mode
+
+The simplest way to use Helios is interactive mode:
+
+```bash
+helios
+```
+
+You'll see the Helios banner and a prompt waiting for your input.
+
+---
+
+## Your First Conversation
+
+Try asking Helios to analyze your project:
+
+```
+? How can I help you today? analyze this project and tell me what it does
+```
+
+Helios will:
+1. Read your project files
+2. Understand the structure
+3. Provide a detailed summary
+
+---
+
+## Slash Commands
+
+Type `/` to see available commands:
+
+export const slashCommands = [
+  { cmd: '/help', desc: 'Show commands' },
+  { cmd: '/clear', desc: 'Clear conversation history' },
+  { cmd: '/tools', desc: 'List available tools' },
+  { cmd: '/model', desc: 'Change AI model' },
+  { cmd: '/stream', desc: 'Toggle streaming mode' },
+  { cmd: '/status', desc: 'Show session info' },
+  { cmd: '/yolo', desc: 'Toggle auto-approve mode' },
+  { cmd: '/exit', desc: 'Exit Helios' },
+];
+
+<div className="overflow-x-auto my-6">
+  <table className="min-w-full border border-zinc-800 rounded-lg overflow-hidden">
+    <thead className="bg-zinc-800">
+      <tr>
+        <th className="text-left text-zinc-200 font-semibold px-4 py-3 text-sm">Command</th>
+        <th className="text-left text-zinc-200 font-semibold px-4 py-3 text-sm">Description</th>
+      </tr>
+    </thead>
+    <tbody className="divide-y divide-zinc-800">
+      {slashCommands.map((c) => (
+        <tr key={c.cmd} className="hover:bg-zinc-800/30 transition-colors">
+          <td className="text-blue-400 font-mono px-4 py-3 text-sm">{c.cmd}</td>
+          <td className="text-zinc-400 px-4 py-3 text-sm">{c.desc}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
+---
+
+## Single Command Mode
+
+For quick tasks, pass your request directly:
+
+```bash
+helios "create a README.md for this project"
+```
+
+```bash
+helios "fix the TypeScript errors in src/"
+```
+
+```bash
+helios "add error handling to the API routes"
+```
+
+---
+
+## UI Generation
+
+Generate beautiful UI components with Vercel v0:
+
+```bash
+# First, set your v0 API key
+helios config set V0_API_KEY v0-...
+
+# Then generate UI
+helios ui "modern dashboard with dark theme"
+```
+
+---
+
+## File Operations
+
+Helios can read, write, and edit files automatically:
+
+**Read a file:**
+```
+show me the contents of package.json
+```
+
+**Create a file:**
+```
+create a new file called utils.ts with helper functions for string manipulation
+```
+
+**Edit a file:**
+```
+add error handling to the fetchData function in api.ts
+```
+
+---
+
+## Git Integration
+
+Work with Git directly:
+
+```
+what changes have I made?
+```
+
+```
+commit all my changes with a descriptive message
+```
+
+```
+show me the git log for the last 5 commits
+```
+
+---
+
+## Pro Tips
+
+### Auto-Approve Mode
+
+Skip permission prompts with YOLO mode:
+
+```
+/yolo
+```
+
+> ⚠️ Use with caution — this auto-approves all tool executions.
+
+### Compact Mode
+
+Reduce output verbosity:
+
+```
+/compact
+```
+
+### Change Model Mid-Session
+
+```
+/model
+```
+
+Select from available models in your configured provider.
+
+---
+
+## What's Next?
+
+- [Configure API Keys](/docs/config/api-keys) — Set up multiple providers
+- [Explore Tools](/docs/tools) — See all 130+ available tools
+- [MCP Integration](/docs/advanced/mcp) — Connect to Claude Desktop

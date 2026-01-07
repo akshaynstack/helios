@@ -1,0 +1,168 @@
+# API Keys Configuration
+
+Helios supports multiple AI providers. Configure one or more to get started.
+
+---
+
+## Supported Providers
+
+export const providers = [
+  { name: 'OpenRouter', bestFor: 'Access to 100+ models', freeTier: '✅ Some models' },
+  { name: 'Anthropic', bestFor: 'Claude models', freeTier: '❌' },
+  { name: 'OpenAI', bestFor: 'GPT models', freeTier: '❌' },
+  { name: 'Google', bestFor: 'Gemini models', freeTier: '✅ Limited' },
+];
+
+<div className="overflow-x-auto my-6">
+  <table className="min-w-full border border-zinc-800 rounded-lg overflow-hidden">
+    <thead className="bg-zinc-800">
+      <tr>
+        <th className="text-left text-zinc-200 font-semibold px-4 py-3 text-sm">Provider</th>
+        <th className="text-left text-zinc-200 font-semibold px-4 py-3 text-sm">Best For</th>
+        <th className="text-left text-zinc-200 font-semibold px-4 py-3 text-sm">Free Tier</th>
+      </tr>
+    </thead>
+    <tbody className="divide-y divide-zinc-800">
+      {providers.map((p) => (
+        <tr key={p.name} className="hover:bg-zinc-800/30 transition-colors">
+          <td className="text-zinc-300 font-medium px-4 py-3 text-sm">{p.name}</td>
+          <td className="text-zinc-400 px-4 py-3 text-sm">{p.bestFor}</td>
+          <td className="text-zinc-400 px-4 py-3 text-sm">{p.freeTier}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
+---
+
+## Setting API Keys
+
+Use the `config set` command:
+
+```bash
+helios config set <KEY_NAME> <value>
+```
+
+### OpenRouter (Recommended)
+
+OpenRouter provides access to many models, including free ones:
+
+```bash
+helios config set OPENROUTER_API_KEY sk-or-v1-xxxx
+```
+
+Get your key: [openrouter.ai/keys](https://openrouter.ai/keys)
+
+### Anthropic
+
+For direct Claude API access:
+
+```bash
+helios config set ANTHROPIC_API_KEY sk-ant-xxxx
+```
+
+Get your key: [console.anthropic.com](https://console.anthropic.com)
+
+### OpenAI
+
+For GPT models:
+
+```bash
+helios config set OPENAI_API_KEY sk-xxxx
+```
+
+Get your key: [platform.openai.com](https://platform.openai.com)
+
+### Google
+
+For Gemini models:
+
+```bash
+helios config set GOOGLE_API_KEY AIzaxxxx
+```
+
+Get your key: [aistudio.google.com](https://aistudio.google.com)
+
+---
+
+## Viewing Configuration
+
+See all configured keys:
+
+```bash
+helios config show
+```
+
+Output:
+
+```
+⚙️  Helios Configuration
+
+● OPENROUTER_API_KEY
+  OpenRouter API: sk-or-...xxx
+○ OPENAI_API_KEY
+  OpenAI API: (not set)
+● ANTHROPIC_API_KEY
+  Anthropic API: sk-ant-...xxx
+```
+
+---
+
+## Priority Order
+
+When multiple keys are configured, Helios uses this priority:
+
+1. **Anthropic** (highest priority)
+2. **OpenRouter**
+3. **OpenAI**
+4. **Google**
+
+This means if you have both Anthropic and OpenRouter configured, Helios will use Anthropic by default.
+
+---
+
+## V0 API Key (Optional)
+
+For UI generation features:
+
+```bash
+helios config set V0_API_KEY v0-xxxx
+```
+
+Get your key: [v0.dev/chat/settings/keys](https://v0.dev/chat/settings/keys)
+
+---
+
+## Environment Variables
+
+You can also use environment variables:
+
+```bash
+export OPENROUTER_API_KEY=sk-or-v1-xxxx
+export ANTHROPIC_API_KEY=sk-ant-xxxx
+```
+
+> Note: Config file settings take precedence over environment variables.
+
+---
+
+## Troubleshooting
+
+### Key Not Working
+
+Run the doctor command:
+
+```bash
+helios doctor
+```
+
+This will test your API connections and report issues.
+
+### Rate Limits
+
+If you're hitting rate limits:
+
+1. Switch to a different provider
+2. Use a model with higher limits
+3. Upgrade your API plan

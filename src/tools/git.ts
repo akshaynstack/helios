@@ -33,7 +33,10 @@ export const handlers: Record<string, ToolHandler> = {
     git_undo: (args) => args.type === 'commit' ? safeExec('git reset --soft HEAD~1') : safeExec('git checkout -- .'),
     git_rebase: (args) => safeExec(`git rebase ${args.branch}`),
     git_cherry_pick: (args) => safeExec(`git cherry-pick ${args.commit}`),
-    git_blame: (args) => safeExec(`git blame ${args.file} | head -30`),
+    git_blame: (args) => {
+        const output = safeExec(`git blame "${args.file}"`);
+        return output.split('\n').slice(0, 30).join('\n');
+    },
     git_reset: (args) => safeExec(`git reset --${args.mode || 'mixed'} ${args.commit}`),
     git_tag: (args) => args.name ? safeExec(`git tag -a "${args.name}" -m "${args.message || args.name}"`) : safeExec('git tag -l')
 };

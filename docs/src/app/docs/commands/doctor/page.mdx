@@ -1,0 +1,74 @@
+# Doctor Command
+
+The `doctor` command diagnoses your Helios installation and configuration.
+
+---
+
+## Usage
+
+```bash
+helios doctor
+```
+
+---
+
+## What It Checks
+
+| Check | Description |
+|-------|-------------|
+| API Keys | Configured provider keys |
+| Model Access | Can connect to AI providers |
+| Tools | All tools loaded correctly |
+| MCP | MCP servers connected |
+| Permissions | File system access |
+
+---
+
+## Example Output
+
+```
+🏥 Helios Doctor
+
+✓ OPENROUTER_API_KEY: Configured
+✗ OPENAI_API_KEY: Not configured
+✓ ANTHROPIC_API_KEY: Configured
+✓ Model Access: google/gemini-2.0-flash-exp:free
+✓ Tools: 130 loaded
+✓ MCP Servers: 0 configured
+```
+
+---
+
+## Common Issues
+
+### No API Key Configured
+
+```
+✗ No API keys configured
+```
+
+**Fix:** Set at least one API key:
+
+```bash
+helios config set OPENROUTER_API_KEY sk-or-...
+```
+
+### Model Access Failed
+
+```
+✗ Model Access: Connection failed
+```
+
+**Fix:**
+1. Check your internet connection
+2. Verify API key is valid
+3. Check provider status page
+
+---
+
+## Troubleshooting Workflow
+
+1. Run `helios doctor`
+2. Fix any `✗` items
+3. Run `helios doctor` again
+4. Start using Helios

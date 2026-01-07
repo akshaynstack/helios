@@ -1,0 +1,77 @@
+# UI Expert Command
+
+Generate stunning UI components using Vercel v0 integration.
+
+---
+
+## Usage
+
+```bash
+helios ui "your UI description"
+```
+
+---
+
+## Prerequisites
+
+Set your V0 API key:
+
+```bash
+helios config set V0_API_KEY v0-...
+```
+
+Get a key at [v0.dev/chat/settings/keys](https://v0.dev/chat/settings/keys)
+
+---
+
+## Examples
+
+### Dashboard
+
+```bash
+helios ui "modern admin dashboard with dark theme"
+```
+
+### Landing Page
+
+```bash
+helios ui "SaaS landing page with hero and pricing"
+```
+
+### Components
+
+```bash
+helios ui "animated card grid with hover effects"
+```
+
+```bash
+helios ui "responsive navigation bar with dropdown menus"
+```
+
+---
+
+## Output
+
+The command:
+
+1. Sends your description to Vercel v0
+2. Generates React/Tailwind components
+3. Saves files to your current directory
+4. Shows a preview
+
+---
+
+## Tips
+
+- Be specific about style (dark theme, glassmorphism, etc.)
+- Mention framework (React, Next.js)
+- Describe interactions (hover effects, animations)
+- Reference popular designs (like Vercel, Stripe)
+
+---
+
+## Limitations
+
+- Requires V0 API key
+- Subject to v0 rate limits
+- Generated code may need tweaks

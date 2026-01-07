@@ -1,0 +1,108 @@
+# File Operations Tools
+
+Tools for reading, writing, and manipulating files.
+
+---
+
+## Available Tools
+
+export const tools = [
+  { name: 'read_file', desc: 'Read contents of a file instantly', args: 'path' },
+  { name: 'write_file', desc: 'Create or overwrite a file', args: 'path, content' },
+  { name: 'edit_file', desc: 'Surgical, precision edits to a file', args: 'path, edits' },
+  { name: 'delete_file', desc: 'Delete a file or directory', args: 'path' },
+  { name: 'list_directory', desc: 'Rust-powered flat listing (powered by fd)', args: 'path' },
+  { name: 'file_tree', desc: 'Near-instant directory tree (Rust-powered)', args: 'path, depth' },
+  { name: 'move_file', desc: 'Relocate files or folders with ease', args: 'from, to' },
+  { name: 'file_stats', desc: 'Get size and metadata instantly', args: 'path' },
+  { name: 'file_diff', desc: 'Compare changes with precision', args: 'path1, path2' },
+];
+
+<div className="overflow-x-auto my-6">
+  <table className="min-w-full border border-zinc-800 rounded-lg overflow-hidden">
+    <thead className="bg-zinc-800">
+      <tr>
+        <th className="text-left text-zinc-200 font-semibold px-4 py-3 text-sm">Tool</th>
+        <th className="text-left text-zinc-200 font-semibold px-4 py-3 text-sm">Description</th>
+        <th className="text-left text-zinc-200 font-semibold px-4 py-3 text-sm">Arguments</th>
+      </tr>
+    </thead>
+    <tbody className="divide-y divide-zinc-800">
+      {tools.map((t) => (
+        <tr key={t.name} className="hover:bg-zinc-800/30 transition-colors">
+          <td className="text-blue-400 font-mono px-4 py-3 text-sm">{t.name}</td>
+          <td className="text-zinc-400 px-4 py-3 text-sm">{t.desc}</td>
+          <td className="text-zinc-500 font-mono px-4 py-3 text-sm">{t.args}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
+---
+
+## Usage Examples
+
+### Reading Files
+
+```
+show me the contents of package.json
+```
+
+```
+read the README file
+```
+
+### Writing Files
+
+```
+create a new file called utils.ts with a debounce function
+```
+
+```
+write a .gitignore file for a Node.js project
+```
+
+### Editing Files
+
+```
+add error handling to the fetchData function in api.ts
+```
+
+```
+update the version in package.json to 2.0.0
+```
+
+### File Operations
+
+```
+delete the old config file
+```
+
+```
+show me the file tree of the src directory
+```
+
+```
+compare package.json with package.json.bak
+```
+
+---
+
+## Permissions
+
+File operations require permission before execution:
+
+- **Read operations** — Usually auto-approved
+- **Write/Edit operations** — Requires confirmation
+- **Delete operations** — Always requires confirmation
+
+Use `/yolo` mode to skip permission prompts.
+
+---
+
+## Best Practices
+
+1. **Be specific** — Mention exact file paths when possible
+2. **Review changes** — Check the diff before approving edits
+3. **Use relative paths** — Helios works from your current directory

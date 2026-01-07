@@ -1,0 +1,120 @@
+# Git Integration Tools
+
+Tools for version control with Git.
+
+---
+
+## Available Tools
+
+export const tools = [
+  { name: 'git_status', desc: 'Show working directory status', args: '-' },
+  { name: 'git_diff', desc: 'Show uncommitted changes', args: 'file (optional)' },
+  { name: 'git_log', desc: 'Show commit history', args: 'count' },
+  { name: 'git_commit', desc: 'Commit staged changes', args: 'message' },
+  { name: 'git_add', desc: 'Stage files for commit', args: 'files' },
+  { name: 'git_branch', desc: 'List or create branches', args: 'name (optional)' },
+  { name: 'git_checkout', desc: 'Switch branches', args: 'branch' },
+  { name: 'git_merge', desc: 'Merge branches', args: 'branch' },
+  { name: 'git_push', desc: 'Push to remote', args: 'remote, branch' },
+  { name: 'git_pull', desc: 'Pull from remote', args: 'remote, branch' },
+  { name: 'git_stash', desc: 'Stash changes', args: 'action' },
+  { name: 'git_blame', desc: 'Show line-by-line authorship', args: 'file' },
+];
+
+<div className="overflow-x-auto my-6">
+  <table className="min-w-full border border-zinc-800 rounded-lg overflow-hidden">
+    <thead className="bg-zinc-800">
+      <tr>
+        <th className="text-left text-zinc-200 font-semibold px-4 py-3 text-sm">Tool</th>
+        <th className="text-left text-zinc-200 font-semibold px-4 py-3 text-sm">Description</th>
+        <th className="text-left text-zinc-200 font-semibold px-4 py-3 text-sm">Arguments</th>
+      </tr>
+    </thead>
+    <tbody className="divide-y divide-zinc-800">
+      {tools.map((t) => (
+        <tr key={t.name} className="hover:bg-zinc-800/30 transition-colors">
+          <td className="text-blue-400 font-mono px-4 py-3 text-sm">{t.name}</td>
+          <td className="text-zinc-400 px-4 py-3 text-sm">{t.desc}</td>
+          <td className="text-zinc-500 font-mono px-4 py-3 text-sm">{t.args}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
+---
+
+## Usage Examples
+
+### Status and Changes
+
+```
+what's the git status?
+```
+
+```
+show me what I've changed
+```
+
+```
+show the diff for src/index.ts
+```
+
+### Committing
+
+```
+commit all my changes with a good message
+```
+
+```
+stage and commit the README changes
+```
+
+### History
+
+```
+show the last 5 commits
+```
+
+```
+who wrote this line in utils.ts?
+```
+
+### Branches
+
+```
+create a new branch called feature/auth
+```
+
+```
+switch to the main branch
+```
+
+```
+merge feature/auth into main
+```
+
+---
+
+## Slash Command
+
+Quick git status in chat:
+
+```
+/git
+```
+
+---
+
+## Permissions
+
+- **Read operations** (status, diff, log) — Auto-approved
+- **Write operations** (commit, push, merge) — Requires confirmation
+
+---
+
+## Best Practices
+
+1. **Review diffs** before committing
+2. **Use descriptive commit messages**
+3. **Check status** before major operations

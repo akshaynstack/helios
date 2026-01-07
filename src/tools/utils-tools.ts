@@ -2,7 +2,7 @@
  * Utility Tools - UUID, Hash, Base64, etc.
  */
 import type { Tool, ToolHandler } from './types.js';
-import { readFile } from './utils.js';
+import { fs, path, readFile } from './utils.js';
 import * as crypto from 'crypto';
 
 export const tools: Tool[] = [
@@ -50,9 +50,9 @@ export const handlers: Record<string, ToolHandler> = {
     },
     json_format: (args) => {
         try {
-            const fs = require('fs');
-            const json = JSON.parse(fs.readFileSync(args.path, 'utf-8'));
-            fs.writeFileSync(args.path, JSON.stringify(json, null, 2));
+            const raw = fs.readFileSync(path.resolve(args.path), 'utf-8');
+            const json = JSON.parse(raw);
+            fs.writeFileSync(path.resolve(args.path), JSON.stringify(json, null, 2));
             return `✓ Formatted ${args.path}`;
         } catch (e: any) { return `Error: ${e.message}`; }
     }

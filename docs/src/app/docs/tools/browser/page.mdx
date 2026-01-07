@@ -1,0 +1,118 @@
+# Browser Automation Tools
+
+Web automation powered by Playwright.
+
+---
+
+## Available Tools
+
+export const tools = [
+  { name: 'browser_open', desc: 'Open a URL in browser', args: 'url' },
+  { name: 'browser_screenshot', desc: 'Capture screenshot', args: 'path' },
+  { name: 'browser_click', desc: 'Click an element', args: 'selector' },
+  { name: 'browser_type', desc: 'Type text into input', args: 'selector, text' },
+  { name: 'browser_scroll', desc: 'Scroll the page', args: 'direction' },
+  { name: 'browser_wait', desc: 'Wait for element', args: 'selector' },
+  { name: 'browser_get_text', desc: 'Get element text', args: 'selector' },
+  { name: 'browser_evaluate', desc: 'Run JavaScript', args: 'script' },
+];
+
+<div className="overflow-x-auto my-6">
+  <table className="min-w-full border border-zinc-800 rounded-lg overflow-hidden">
+    <thead className="bg-zinc-800">
+      <tr>
+        <th className="text-left text-zinc-200 font-semibold px-4 py-3 text-sm">Tool</th>
+        <th className="text-left text-zinc-200 font-semibold px-4 py-3 text-sm">Description</th>
+        <th className="text-left text-zinc-200 font-semibold px-4 py-3 text-sm">Arguments</th>
+      </tr>
+    </thead>
+    <tbody className="divide-y divide-zinc-800">
+      {tools.map((t) => (
+        <tr key={t.name} className="hover:bg-zinc-800/30 transition-colors">
+          <td className="text-blue-400 font-mono px-4 py-3 text-sm">{t.name}</td>
+          <td className="text-zinc-400 px-4 py-3 text-sm">{t.desc}</td>
+          <td className="text-zinc-500 font-mono px-4 py-3 text-sm">{t.args}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
+---
+
+## Usage Examples
+
+### Navigation
+
+```
+open https://example.com in the browser
+```
+
+```
+take a screenshot of the current page
+```
+
+### Interaction
+
+```
+click the login button
+```
+
+```
+type "hello@example.com" in the email field
+```
+
+```
+scroll down the page
+```
+
+### Data Extraction
+
+```
+get the text from the main heading
+```
+
+```
+scrape all the product titles from this page
+```
+
+---
+
+## Prerequisites
+
+Playwright is included with Helios. On first use, it may install browser binaries:
+
+```bash
+npx playwright install chromium
+```
+
+---
+
+## Headless Mode
+
+By default, browser runs in headless mode (no visible window).
+
+For debugging, you can request visible mode:
+
+```
+open the browser visibly and go to example.com
+```
+
+---
+
+## Selectors
+
+Use CSS selectors or text content:
+
+- **CSS:** `#login-button`, `.submit-btn`
+- **Text:** `button:has-text("Submit")`
+- **ID:** `#email-input`
+
+---
+
+## Use Cases
+
+1. **Web scraping** — Extract data from websites
+2. **Testing** — Verify web app functionality
+3. **Automation** — Fill forms, click buttons
+4. **Screenshots** — Capture page states

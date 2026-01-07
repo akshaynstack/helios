@@ -1,0 +1,114 @@
+# Shell Command Tools
+
+Execute system commands and scripts.
+
+---
+
+## Available Tools
+
+export const tools = [
+  { name: 'run_command', desc: 'Run any shell command with safety screening', args: 'command' },
+  { name: 'search_files', desc: 'Ultra-fast content search powered by Ripgrep', args: 'pattern, path' },
+  { name: 'semantic_search', desc: 'Find code by meaning using natural language', args: 'query, path' },
+  { name: 'find_files', desc: 'Rust-powered file discovery using fd', args: 'pattern' },
+  { name: 'shell_script', desc: 'Run a multi-line script', args: 'script' },
+  { name: 'background_process', desc: 'Run in background', args: 'command' },
+  { name: 'environment_get', desc: 'Get environment variable', args: 'name' },
+  { name: 'environment_set', desc: 'Set environment variable', args: 'name, value' },
+];
+
+<div className="overflow-x-auto my-6">
+  <table className="min-w-full border border-zinc-800 rounded-lg overflow-hidden">
+    <thead className="bg-zinc-800">
+      <tr>
+        <th className="text-left text-zinc-200 font-semibold px-4 py-3 text-sm">Tool</th>
+        <th className="text-left text-zinc-200 font-semibold px-4 py-3 text-sm">Description</th>
+        <th className="text-left text-zinc-200 font-semibold px-4 py-3 text-sm">Arguments</th>
+      </tr>
+    </thead>
+    <tbody className="divide-y divide-zinc-800">
+      {tools.map((t) => (
+        <tr key={t.name} className="hover:bg-zinc-800/30 transition-colors">
+          <td className="text-blue-400 font-mono px-4 py-3 text-sm">{t.name}</td>
+          <td className="text-zinc-400 px-4 py-3 text-sm">{t.desc}</td>
+          <td className="text-zinc-500 font-mono px-4 py-3 text-sm">{t.args}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
+---
+
+## Usage Examples
+
+### Running Commands
+
+```
+run npm install
+```
+
+```
+execute the build script
+```
+
+```
+check the node version
+```
+
+### Background Processes
+
+```
+start the dev server in background
+```
+
+```
+run docker-compose up in background
+```
+
+### High-Performance Search
+
+```
+search for "export const config"
+```
+
+```
+find code by meaning: "where is the payment logic?"
+```
+
+```
+locate all .css files in src/
+```
+
+---
+
+## Security
+
+Shell commands are security-scanned before execution:
+
+**Blocked patterns:**
+- `rm -rf /` and destructive variations
+- `eval()` and code injection
+- Suspicious file operations
+
+**Requires confirmation:**
+- All shell commands (unless in YOLO mode)
+- System-modifying operations
+
+---
+
+## Cross-Platform
+
+Commands are executed using the system's default shell:
+
+- **Windows** — PowerShell
+- **macOS/Linux** — bash/zsh
+
+---
+
+## Best Practices
+
+1. **Review commands** before approving
+2. **Use specific commands** instead of scripts when possible
+3. **Avoid sudo** unless necessary
+4. **Check output** for errors

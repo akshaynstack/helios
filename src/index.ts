@@ -5,7 +5,7 @@ import figlet from 'figlet';
 import boxen from 'boxen';
 import gradient from 'gradient-string';
 import { chat } from './chat.js';
-import { config, addMCPServer, removeMCPServer, getMCPServers } from './config.js';
+import { config, addMCPServer, removeMCPServer, getMCPServers, getApiKey } from './config.js';
 import { uiExpert } from './ui-expert.js';
 import { startMCPServer, generateMCPConfig } from './mcp/index.js';
 import { tools } from './tools/index.js';
@@ -108,6 +108,53 @@ program
         } else {
             console.log(chalk.red(`Unknown provider: ${provider}`));
         }
+    });
+
+// ==================== PROVIDER COMMANDS ====================
+
+const providerCommand = program
+    .command('provider')
+    .description('🔧 Manage custom OpenAI-compatible providers');
+
+providerCommand
+    .command('add')
+    .description('Add a custom provider (OpenAI-compatible API)')
+    .argument('<base-url>', 'Base URL for the provider (e.g., http://localhost:11434/v1)')
+    .argument('[api-key]', 'API key (optional for local providers)')
+    .action((baseUrl: string, apiKey?: string) => {
+        config.set('CUSTOM_BASE_URL', baseUrl);
+        config.set('CUSTOM_API_KEY', apiKey || '');
+        console.log(gradient(['#00ff87', '#60efff'])(`\n✓ Custom provider set: ${baseUrl}`));
+        console.log(chalk.dim('Use /model in chat to select models from this provider\n'));
+    });
+
+providerCommand
+    .command('remove')
+    .description('Remove custom provider')
+    .action(() => {
+        config.set('CUSTOM_BASE_URL', '');
+        config.set('CUSTOM_API_KEY', '');
+        console.log(chalk.yellow('\n✓ Custom provider removed\n'));
+    });
+
+providerCommand
+    .command('show')
+    .description('Show configured providers')
+    .action(() => {
+        console.log('\n' + gradient(['#667eea', '#764ba2'])('🔧 Configured Providers\n'));
+
+        const anthropic = config.get('ANTHROPIC_API_KEY');
+        const openrouter = config.get('OPENROUTER_API_KEY');
+        const openai = config.get('OPENAI_API_KEY');
+        const google = config.get('GOOGLE_API_KEY');
+        const customUrl = config.get('CUSTOM_BASE_URL');
+
+        console.log(`  ${anthropic ? chalk.green('●') : chalk.dim('○')} Anthropic (Claude)`);
+        console.log(`  ${openrouter ? chalk.green('●') : chalk.dim('○')} OpenRouter`);
+        console.log(`  ${openai ? chalk.green('●') : chalk.dim('○')} OpenAI`);
+        console.log(`  ${google ? chalk.green('●') : chalk.dim('○')} Google`);
+        console.log(`  ${customUrl ? chalk.green('●') : chalk.dim('○')} Custom: ${customUrl || chalk.dim('not set')}`);
+        console.log();
     });
 
 // ==================== MCP COMMANDS ====================
@@ -308,6 +355,105 @@ program
 
 // ==================== DEFAULT COMMAND ====================
 
+// Welcome dashboard (Claude Code style)
+function showWelcomeDashboard() {
+    const { key, provider } = getApiKey();
+    const model = config.get('MODEL') || 'google/gemini-2.0-flash-exp:free';
+    const mcpServers = getMCPServers();
+
+    // Clear screen and show dashboard
+    console.clear();
+    console.log('\n' + banner);
+    console.log('  ' + tagline + '\n');
+
+    // Create side-by-side boxes
+    const leftBox = boxen(
+        gradient(['#667eea', '#764ba2'])('Welcome back!') + '\n\n' +
+        chalk.hex('#60efff')(`    *  ██╗  ██╗  *
+   * ╔██╗  ██╗╗ *
+     ╚██████╔╝
+      ╚═════╝`) + '\n\n' +
+        chalk.dim(model.split('/').pop()?.split(':')[0] || 'AI Model') + '\n' +
+        chalk.dim(process.cwd()),
+        {
+            padding: { top: 0, bottom: 0, left: 2, right: 2 },
+            borderColor: 'yellow',
+            borderStyle: 'round',
+            width: 36,
+            title: chalk.yellow(`Helios v0.2.0`),
+            titleAlignment: 'center'
+        }
+    );
+
+    const tips = [
+        'Type your request and press Enter',
+        'Use / for slash commands',
+        '/model to change AI model',
+        '/yolo to auto-approve actions',
+        '/help for all commands'
+    ];
+
+    const rightBox = boxen(
+        gradient(['#f5576c', '#f093fb'])('Tips for getting started') + '\n\n' +
+        tips.map(t => chalk.dim('• ' + t)).join('\n') + '\n\n' +
+        gradient(['#f5576c', '#f093fb'])('Status') + '\n\n' +
+        (key ? chalk.green('● ') + chalk.dim(`${provider} connected`) : chalk.red('○ ') + chalk.dim('No API key')) + '\n' +
+        chalk.dim(`● ${tools.length} tools available`) + '\n' +
+        chalk.dim(`● ${mcpServers.length} MCP servers`),
+        {
+            padding: { top: 0, bottom: 0, left: 2, right: 2 },
+            borderColor: 'red',
+            borderStyle: 'round',
+            width: 42,
+        }
+    );
+
+    // Print boxes side by side
+    const leftLines = leftBox.split('\n');
+    const rightLines = rightBox.split('\n');
+    const maxLines = Math.max(leftLines.length, rightLines.length);
+
+    for (let i = 0; i < maxLines; i++) {
+        const left = leftLines[i] || ' '.repeat(36);
+        const right = rightLines[i] || '';
+        console.log(left + '  ' + right);
+    }
+
+    console.log('\n' + chalk.dim('? for shortcuts'));
+    console.log();
+}
+
+// Alternate screen buffer (like Claude Code)
+function enterAlternateScreen() {
+    // Enter alternate screen buffer
+    process.stdout.write('\x1b[?1049h');
+    // Hide cursor initially
+    process.stdout.write('\x1b[?25l');
+    // Move cursor to top
+    process.stdout.write('\x1b[H');
+}
+
+function exitAlternateScreen() {
+    // Show cursor
+    process.stdout.write('\x1b[?25h');
+    // Exit alternate screen buffer
+    process.stdout.write('\x1b[?1049l');
+}
+
+// Cleanup on exit
+function setupCleanupHandlers() {
+    const cleanup = () => {
+        exitAlternateScreen();
+        process.exit(0);
+    };
+
+    process.on('SIGINT', cleanup);
+    process.on('SIGTERM', cleanup);
+    process.on('exit', () => {
+        exitAlternateScreen();
+    });
+}
+
 program
     .argument('[prompt...]', 'Direct prompt to run')
     .action(async (promptParts: string[]) => {
@@ -316,21 +462,22 @@ program
             console.log(chalk.dim('→ ' + prompt + '\n'));
             await chat(prompt);
         } else {
-            // Enter interactive mode by default (like Claude Code)
-            console.log(boxen(
-                chalk.white.bold('Interactive Mode\n\n') +
-                chalk.dim('Ask me to read, write, or edit files.\n') +
-                chalk.dim('Type ') + chalk.cyan('/') + chalk.dim(' for commands, ') +
-                chalk.cyan('exit') + chalk.dim(' to quit.'),
-                {
-                    padding: 1,
-                    borderColor: 'magenta',
-                    borderStyle: 'round',
-                    dimBorder: true
-                }
-            ));
-            console.log();
-            await chat();
+            // Enter fullscreen mode (alternate screen buffer)
+            enterAlternateScreen();
+            setupCleanupHandlers();
+
+            // Show cursor for input
+            process.stdout.write('\x1b[?25h');
+
+            // Show welcome dashboard and enter interactive mode
+            showWelcomeDashboard();
+
+            try {
+                await chat();
+            } finally {
+                // Restore terminal
+                exitAlternateScreen();
+            }
         }
     });
 

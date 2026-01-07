@@ -1,0 +1,148 @@
+# MCP Integration
+
+Helios can act as an **MCP (Model Context Protocol) server**, exposing its tools to Claude Desktop and other MCP clients.
+
+---
+
+## What is MCP?
+
+The Model Context Protocol (MCP) is a standard that allows AI assistants like Claude to connect to external tool servers. When Helios runs as an MCP server, Claude Desktop can use all 130+ Helios tools.
+
+---
+
+## Starting the MCP Server
+
+```bash
+helios mcp serve
+```
+
+Or simply:
+
+```bash
+helios mcp
+```
+
+The server runs in stdio mode, communicating via standard input/output.
+
+---
+
+## Claude Desktop Integration
+
+Add Helios to your Claude Desktop configuration:
+
+### Step 1: Find Config File
+
+**macOS:**
+```
+~/Library/Application Support/Claude/claude_desktop_config.json
+```
+
+**Windows:**
+```
+%APPDATA%\Claude\claude_desktop_config.json
+```
+
+### Step 2: Add Helios Configuration
+
+```json
+{
+  "mcpServers": {
+    "helios": {
+      "command": "helios",
+      "args": ["mcp"]
+    }
+  }
+}
+```
+
+### Step 3: Restart Claude Desktop
+
+Close and reopen Claude Desktop. You should see Helios tools available.
+
+---
+
+## Viewing MCP Config
+
+Get the configuration snippet:
+
+```bash
+helios mcp config
+```
+
+This outputs the JSON you need to add to Claude Desktop.
+
+---
+
+## Managing MCP Servers
+
+Helios can also connect to other MCP servers as a client.
+
+### List Configured Servers
+
+```bash
+helios mcp list
+```
+
+### Add a Server
+
+```bash
+helios mcp add <name> <url>
+```
+
+Example:
+
+```bash
+helios mcp add database http://localhost:5000
+```
+
+### Remove a Server
+
+```bash
+helios mcp remove <name>
+```
+
+---
+
+## Available Tools via MCP
+
+When connected, Claude Desktop has access to:
+
+- **File Operations** — Read, write, edit files
+- **Git Integration** — Status, diff, commit, branch
+- **Shell Commands** — Execute system commands
+- **Browser Automation** — Web scraping, screenshots
+- **And 100+ more tools**
+
+---
+
+## Security Considerations
+
+When running as an MCP server:
+
+1. **Tools require permission** — The supervision layer still applies
+2. **Audit logging active** — All actions logged to `~/.helios/audit.jsonl`
+3. **Security scanning enabled** — Dangerous operations are blocked
+
+---
+
+## Troubleshooting
+
+### MCP Server Not Connecting
+
+1. Verify Helios is installed globally:
+   ```bash
+   which helios
+   ```
+
+2. Test the MCP server directly:
+   ```bash
+   helios mcp serve
+   ```
+
+3. Check Claude Desktop logs for errors
+
+### Tools Not Appearing
+
+1. Restart Claude Desktop completely
+2. Verify the config file syntax is valid JSON
+3. Ensure the path to `helios` is in your PATH

@@ -8,10 +8,11 @@ import type { Message, Tool, ProviderResponse } from '../types.js';
 export class OpenAIProvider implements AIProvider {
     name = 'openai';
     private apiKey: string;
-    private baseURL = 'https://api.openai.com/v1';
+    private baseURL: string;
 
-    constructor(apiKey: string) {
+    constructor(apiKey: string, baseUrl?: string) {
         this.apiKey = apiKey;
+        this.baseURL = baseUrl || 'https://api.openai.com/v1';
     }
 
     async chat(messages: Message[], tools: Tool[], options: ChatOptions = {}): Promise<ProviderResponse> {
@@ -39,6 +40,13 @@ export class OpenAIProvider implements AIProvider {
                             parameters: t.parameters
                         }
                     })) : undefined,
+                    tool_choice: tools.length > 0 ? 'auto' : undefined,
+                    functions: tools.length > 0 ? tools.map(t => ({
+                        name: t.name,
+                        description: t.description,
+                        parameters: t.parameters
+                    })) : undefined,
+                    function_call: tools.length > 0 ? 'auto' : undefined,
                     temperature: options.temperature ?? 0.7
                 }),
                 signal: controller.signal
@@ -57,15 +65,22 @@ export class OpenAIProvider implements AIProvider {
 
             return {
                 content: message.content,
-                toolCalls: message.tool_calls?.map((tc: any) => ({
+                toolCalls: (message.tool_calls?.map((tc: any) => ({
                     id: tc.id,
                     type: 'function',
                     function: {
                         name: tc.function.name,
                         arguments: tc.function.arguments
                     }
-                })) || [],
-                finishReason: choice.finish_reason === 'tool_calls' ? 'tool_calls' : 'stop',
+                })) || []).concat(message.function_call ? [{
+                    id: `fc_${Date.now()}`,
+                    type: 'function',
+                    function: {
+                        name: message.function_call.name,
+                        arguments: message.function_call.arguments
+                    }
+                }] : []),
+                finishReason: (choice.finish_reason === 'tool_calls' || choice.finish_reason === 'function_call') ? 'tool_calls' : 'stop',
                 usage: data.usage ? {
                     promptTokens: data.usage.prompt_tokens,
                     completionTokens: data.usage.completion_tokens,
@@ -106,6 +121,13 @@ export class OpenAIProvider implements AIProvider {
                             parameters: t.parameters
                         }
                     })) : undefined,
+                    tool_choice: tools.length > 0 ? 'auto' : undefined,
+                    functions: tools.length > 0 ? tools.map(t => ({
+                        name: t.name,
+                        description: t.description,
+                        parameters: t.parameters
+                    })) : undefined,
+                    function_call: tools.length > 0 ? 'auto' : undefined,
                     temperature: options.temperature ?? 0.7,
                     stream: true
                 }),
@@ -171,6 +193,24 @@ export class OpenAIProvider implements AIProvider {
                                     } else if (currentToolCall) {
                                         if (tc.function?.name) currentToolCall.name += tc.function.name;
                                         if (tc.function?.arguments) currentToolCall.arguments += tc.function.arguments;
+                                    }
+                                }
+                            }
+
+                            if (delta?.function_call) {
+                                if (delta.function_call.name) {
+                                    if (currentToolCall) {
+                                        yield { type: 'tool_call', toolCall: currentToolCall };
+                                    }
+                                    currentToolCall = {
+                                        id: `fc_${Date.now()}`,
+                                        name: delta.function_call.name,
+                                        arguments: ''
+                                    };
+                                }
+                                if (delta.function_call.arguments) {
+                                    if (currentToolCall) {
+                                        currentToolCall.arguments += delta.function_call.arguments;
                                     }
                                 }
                             }

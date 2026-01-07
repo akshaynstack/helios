@@ -39,13 +39,18 @@ export { OpenAIProvider } from './openai.js';
  * Get the appropriate provider based on configured API keys
  */
 export async function getProvider(): Promise<AIProvider> {
-    const { key, provider } = getApiKey();
+    const { key, provider, baseUrl } = getApiKey();
 
-    if (!key) {
+    if (!key && provider !== 'custom') {
         throw new Error('No API key configured. Run: helios config set OPENROUTER_API_KEY sk-or-...');
     }
 
     switch (provider) {
+        case 'custom': {
+            // Custom OpenAI-compatible provider
+            const { OpenAIProvider } = await import('./openai.js');
+            return new OpenAIProvider(key, baseUrl);
+        }
         case 'anthropic': {
             const { ClaudeProvider } = await import('./claude.js');
             return new ClaudeProvider(key);
