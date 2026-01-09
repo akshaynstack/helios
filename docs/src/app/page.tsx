@@ -1,194 +1,247 @@
+'use client';
+
+import { useState } from 'react';
 import Link from 'next/link';
+import { Features } from '../components/Features';
+import { Terminal } from '../components/Terminal';
+import { Marquee } from '../components/Marquee';
+import { Check, Sparkles, Twitter, Github, Linkedin, Terminal as TerminalIcon } from 'lucide-react';
 
-const features = [
-  {
-    icon: '🚀',
-    title: 'Flow-State Engine',
-    description: 'Triple-threat search (ripgrep, fd, mgrep) for instant context and meaning-based discovery',
-  },
-  {
-    icon: '🛡️',
-    title: 'Proactive Autopilot',
-    description: 'Zero-interruption background installs for rg, fd, and playwright. Stay in the zone.',
-  },
-  {
-    icon: '📊',
-    title: 'Engine Analytics',
-    description: 'Real-time efficiency metrics showing tokens saved, engine power, and cost avoided',
-  },
-  {
-    icon: '🔌',
-    title: 'Unstoppable Tooling',
-    description: '130+ tools with MCP support, smart scaffolding, and multi-provider fallback flow',
-  },
-  {
-    icon: '🎨',
-    title: 'Visual Intelligence',
-    description: 'Generate stunning UIs with v0 and verify them with auto-installing browser tools',
-  },
-  {
-    icon: '🔄',
-    title: 'Multi-Provider Flow',
-    description: 'OpenRouter, Claude, OpenAI - automatic model-mapping and robust tool-call fallbacks',
-  },
-];
-
-const commands = [
-  { cmd: 'helios', desc: 'Start interactive chat mode' },
-  { cmd: 'helios "fix the bug"', desc: 'Single command mode' },
-  { cmd: 'helios ui "dashboard"', desc: 'Generate UI components' },
-  { cmd: 'helios mcp', desc: 'Start MCP server' },
-  { cmd: 'helios doctor', desc: 'Diagnose configuration' },
-  { cmd: 'helios tools', desc: 'List all available tools' },
+const partners = [
+  'Ripgrep', 'Playwright', 'fd-find', 'OpenRouter', 'Rust',
+  'Docker', 'Mgrep', 'Claude', 'Gemini'
 ];
 
 export default function Home() {
+  const [copied, setCopied] = useState(false);
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText('npm install -g helios-cli');
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   return (
-    <div className="min-h-[calc(100vh-64px)]">
+    <div className="min-h-screen bg-[#050505] text-gray-300 selection:bg-orange-500/20">
+
+      {/* Background Gradients */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <div className="absolute top-0 inset-x-0 h-[500px] bg-gradient-to-b from-orange-900/10 to-transparent opacity-50" />
+        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-orange-600/5 blur-[128px]" />
+      </div>
+
       {/* Hero Section */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-orange-500/10 via-amber-500/5 to-transparent" />
-        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-20" />
+      <section className="relative z-10 pt-20 md:pt-32 pb-12 md:pb-20 px-6 max-w-7xl mx-auto text-center">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-orange-500/20 bg-orange-500/10 text-orange-400 text-[10px] md:text-xs font-medium mb-6 md:mb-8">
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
+          </span>
+          v0.2.0: The Flow-State Engine 🚀
+        </div>
 
-        <div className="relative max-w-screen-2xl mx-auto px-6 py-24 md:py-32">
-          <div className="flex flex-col items-center text-center">
-            <div className="inline-flex items-center gap-2 bg-zinc-800/50 border border-zinc-700 rounded-full px-4 py-1.5 mb-6">
-              <span className="text-xs font-medium text-orange-400">v0.2.0</span>
-              <span className="text-xs text-zinc-500">•</span>
-              <span className="text-xs text-zinc-400">BridgeMind Vibeathon Entry</span>
+        <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white tracking-tight mb-6 leading-tight">
+          Stay in the zone with <br />
+          <span className="bg-gradient-to-r from-orange-500 via-orange-400 to-amber-400 bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(234,88,12,0.2)]">
+            high-performance context.
+          </span>
+        </h1>
+
+        <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-10">
+          Helios is the flow-state engine for vibecoders. Zero-config toolchain,
+          multi-model failover, and proactive browser automation. ⚡
+        </p>
+
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-20">
+          <Link href="/docs/installation" className="px-6 py-3.5 bg-orange-600 hover:bg-orange-500 text-white font-semibold rounded-lg transition-all shadow-[0_0_20px_rgba(234,88,12,0.3)] hover:scale-105 active:scale-95 leading-none h-fit">
+            Explore Docs
+          </Link>
+          <div
+            onClick={copyToClipboard}
+            className="group px-6 py-4 bg-[#111] hover:bg-[#161616] text-gray-300 border border-zinc-800 rounded-lg font-mono text-sm flex items-center gap-3 cursor-pointer transition-all active:scale-95"
+          >
+            <span className="text-orange-500">$</span>
+            <span>npm i -g helios-cli</span>
+            <div className="ml-2 pl-3 border-l border-zinc-800 text-zinc-500 group-hover:text-orange-500 transition-colors">
+              {copied ? <Check size={14} className="text-green-500" /> : <TerminalIcon size={14} />}
             </div>
+          </div>
+        </div>
 
-            <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-white via-orange-200 to-amber-400 bg-clip-text text-transparent">
-              Helios Engine
-            </h1>
+        <Terminal />
+      </section>
 
-            <p className="text-xl md:text-2xl text-zinc-400 max-w-2xl mb-8">
-              The <span className="text-white font-semibold">Flow-State Engine</span> for Vibecoders.
-              Ultra-fast search, proactive automation, and real-time efficiency proof.
+      {/* Social Proof / Engine Underpinnings */}
+      <section className="pt-12 md:pt-20 pb-12 md:pb-16 bg-[#080808]/30">
+        <div className="max-w-7xl mx-auto px-6 text-center mb-8 md:mb-12">
+          <p className="text-[10px] md:text-sm text-zinc-500 mb-4 uppercase tracking-[0.3em] font-bold">Engine Underpinnings</p>
+          <div className="h-px w-12 md:w-20 bg-orange-500/50 mx-auto" />
+        </div>
+
+        <Marquee speed="medium">
+          {partners.map(p => (
+            <span key={p} className="text-2xl md:text-3xl font-bold text-zinc-700 hover:text-orange-500/50 transition-colors lowercase tracking-tighter shrink-0 cursor-default">
+              {p}
+            </span>
+          ))}
+        </Marquee>
+      </section>
+
+      {/* Feature Bento Grid */}
+      <section className="py-12 md:py-24 px-6 max-w-7xl mx-auto">
+        <h2 className="text-3xl md:text-5xl font-bold text-center mb-4">Unstoppable Tooling.</h2>
+        <p className="text-center text-gray-500 mb-10 md:mb-12 max-w-2xl mx-auto text-base md:text-lg leading-relaxed">
+          Helios replaces fragile scripts with a robust, high-performance engine
+          that maps your entire workspace in milliseconds.
+        </p>
+
+        <Features />
+      </section>
+
+      {/* Context Section */}
+      <section className="py-12 md:py-24 border-t border-zinc-900 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center gap-10 md:gap-16">
+          <div className="flex-1 text-center md:text-left">
+            <div className="text-orange-500 font-bold mb-4 tracking-widest uppercase text-[10px] md:text-xs">The Triple-Threat Engine</div>
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">Blazing Fast Context.</h2>
+            <p className="text-gray-400 text-sm md:text-lg mb-8 leading-relaxed max-w-xl mx-auto md:mx-0">
+              Helios uses custom binary integrations to scan 100k+ files in under 100ms.
+              No indexing required.
             </p>
-
-            <div className="flex flex-col sm:flex-row gap-4 mb-12">
-              <Link
-                href="/docs/installation"
-                className="inline-flex items-center justify-center gap-2 bg-orange-600 hover:bg-orange-700 text-white font-medium px-6 py-3 rounded-lg transition-colors"
-              >
-                Get Started
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </Link>
-              <a
-                href="https://github.com/akshaynstack/helios"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 bg-zinc-800 hover:bg-zinc-700 text-white font-medium px-6 py-3 rounded-lg transition-colors border border-zinc-700"
-              >
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.604-3.369-1.341-3.369-1.341-.454-1.155-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.167 22 16.418 22 12c0-5.523-4.477-10-10-10z" />
-                </svg>
-                View on GitHub
-              </a>
-            </div>
-
-            {/* Terminal Preview */}
-            <div className="w-full max-w-4xl bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden shadow-2xl">
-              <div className="flex items-center gap-2 px-4 py-3 bg-zinc-800/50 border-b border-zinc-800">
-                <div className="w-3 h-3 rounded-full bg-red-500/80" />
-                <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
-                <div className="w-3 h-3 rounded-full bg-green-500/80" />
-                <span className="ml-2 text-xs text-zinc-500">Terminal</span>
+            <ul className="space-y-4">
+              {[
+                'Exact Search via Ripgrep',
+                'Instant File Discovery (fd-find)',
+                'Meaning-based search (mgrep)',
+                'Silent auto-installing dependencies'
+              ].map((item, i) => (
+                <li key={i} className="flex items-center gap-3 text-gray-300">
+                  <span className="w-5 h-5 flex items-center justify-center rounded-full bg-orange-500/10 text-orange-500 text-xs">✓</span>
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="flex-1 relative">
+            <div className="absolute inset-0 bg-orange-500/10 blur-[120px] rounded-full" />
+            <div className="relative bg-[#0A0A0A] border border-zinc-800 rounded-xl p-8 shadow-2xl">
+              <div className="flex items-center gap-2 mb-6 border-b border-zinc-800 pb-4">
+                <div className="w-3 h-3 rounded-full bg-orange-500/30" />
+                <span className="text-xs text-zinc-500 font-mono">helios — context-scan --depth-inf</span>
               </div>
-              <div className="p-4 font-mono text-sm">
-                <div className="text-zinc-500">$ npm install -g helios-cli</div>
-                <div className="text-zinc-500 mt-2">$ helios config set OPENROUTER_API_KEY sk-or-...</div>
-                <div className="text-zinc-500 mt-2">$ helios</div>
-                <div className="mt-4 text-orange-400">
-                  ██╗  ██╗███████╗██╗     ██╗ ██████╗ ███████╗<br />
-                  ██║  ██║██╔════╝██║     ██║██╔═══██╗██╔════╝<br />
-                  ███████║█████╗  ██║     ██║██║   ██║███████╗<br />
-                  ██╔══██║██╔══╝  ██║     ██║██║   ██║╚════██║<br />
-                  ██║  ██║███████╗███████╗██║╚██████╔╝███████║<br />
-                  ╚═╝  ╚═╝╚══════╝╚══════╝╚═╝ ╚═════╝ ╚══════╝
+              <pre className="text-xs font-mono text-gray-400 overflow-x-auto">
+                <code>
+                  <span className="text-orange-500">➜</span> scanning workspace...<br />
+                  <span className="text-zinc-600">{'>'} git_ls_files: 1,240 matches</span><br />
+                  <span className="text-zinc-600">{'>'} ripgrep core.ts: 12ms</span><br />
+                  <span className="text-zinc-600">{'>'} fd metadata: 8ms</span><br /><br />
+                  <span className="text-green-500">✅ Context Mapped in 42ms</span><br />
+                  <span className="text-zinc-500 italic">// 0 tokens wasted on searching</span>
+                </code>
+              </pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* About Developer */}
+      <section className="py-12 px-6 relative max-w-7xl mx-auto overflow-hidden">
+        <div className="glass-card overflow-hidden border-white/[0.05] bg-gradient-to-br from-white/[0.02] to-transparent">
+          <div className="grid md:grid-cols-[400px_1fr] items-center">
+            <div className="relative h-full min-h-[400px] border-r border-white/5">
+              <img
+                src="/images/akshayn.webp"
+                alt="Akshay N - Solo Engineer"
+                className="absolute inset-0 w-full h-full object-cover transition-all duration-700 border-r border-white/5"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60" />
+              <div className="absolute bottom-6 left-6">
+                <div className="badge-framer bg-white/10 backdrop-blur-md border-white/20 text-white font-bold">
+                  Solo Developer
                 </div>
-                <div className="mt-2 text-zinc-400">⚡ High-Performance Context Engine • 130+ Tools</div>
-                <div className="mt-1 text-cyan-400">🚀 Engine Power: 98.4% Optimized</div>
-                <div className="mt-4 text-green-400">? How can I boost your flow today?</div>
-                <div className="mt-1 text-white">▊</div>
+              </div>
+            </div>
+            <div className="p-6 md:p-12 space-y-8">
+              <div>
+                <h2 className="text-4xl md:text-5xl font-bold mb-6 tracking-tight leading-tight">Engineering the <span className="bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">Flow-State Engine</span></h2>
+                <p className="text-xl text-zinc-400 leading-relaxed">
+                  Helios isn&apos;t just another CLI wrapper. It&apos;s a high-performance orchestration layer designed to give AI agents the visual intelligence and local tools they need to move at the speed of thought.
+                </p>
+              </div>
+
+              <div className="space-y-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-full border border-orange-500/20 flex items-center justify-center bg-orange-500/5">
+                    <Sparkles className="w-5 h-5 text-orange-500/60" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-white tracking-tight">AKSHAY N</h4>
+                    <p className="text-sm text-zinc-500 italic">Founder & Solo Engineer</p>
+                  </div>
+                </div>
+
+                <blockquote className="border-l-2 border-orange-500/20 pl-6 text-zinc-400 italic">
+                  &quot;I built Helios to bridge the gap between AI chat and AI engineering. It&apos;s about giving the model raw power—directly in your terminal, with zero latency and full environment context.&quot;
+                </blockquote>
+                <div className="flex gap-4">
+                  <Link
+                    href="https://x.com/akshaynceo"
+                    target="_blank"
+                    className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 hover:border-white/20 transition-all group/icon"
+                  >
+                    <Twitter className="w-5 h-5 text-text-secondary group-hover/icon:text-white transition-colors" />
+                  </Link>
+                  <Link
+                    href="https://github.com/akshaynstack"
+                    target="_blank"
+                    className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 hover:border-white/20 transition-all group/icon"
+                  >
+                    <Github className="w-5 h-5 text-text-secondary group-hover/icon:text-white transition-colors" />
+                  </Link>
+                  <Link
+                    href="https://www.linkedin.com/in/akshaynstack/"
+                    target="_blank"
+                    className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 hover:border-white/20 transition-all group/icon"
+                  >
+                    <Linkedin className="w-5 h-5 text-text-secondary group-hover/icon:text-white transition-colors" />
+                  </Link>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="py-24 border-t border-zinc-800">
-        <div className="max-w-screen-2xl mx-auto px-6">
-          <h2 className="text-3xl font-bold text-center mb-4">Everything You Need</h2>
-          <p className="text-zinc-400 text-center max-w-2xl mx-auto mb-16">
-            Helios combines the power of multiple AI providers with a comprehensive toolkit
-            for modern software development.
-          </p>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {features.map((feature) => (
-              <div
-                key={feature.title}
-                className="group p-6 bg-zinc-900/50 border border-zinc-800 rounded-xl hover:bg-zinc-800/50 hover:border-zinc-700 transition-all"
-              >
-                <span className="text-3xl mb-4 block">{feature.icon}</span>
-                <h3 className="text-lg font-semibold text-white mb-2">{feature.title}</h3>
-                <p className="text-zinc-400 text-sm">{feature.description}</p>
-              </div>
-            ))}
+      {/* CTA Bottom */}
+      <section className="py-20 md:py-32 text-center relative overflow-hidden">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-orange-500/5 blur-[128px] pointer-events-none" />
+        <h2 className="text-3xl md:text-4xl font-bold text-white mb-8 tracking-tight px-6">Ready to vibecode?</h2>
+        <div
+          onClick={copyToClipboard}
+          className="group inline-flex items-center gap-4 p-2 bg-[#111] border border-zinc-800 rounded-lg pr-6 cursor-pointer hover:border-zinc-700 transition-all hover:bg-[#151515] active:scale-95"
+        >
+          <div className="px-3 py-1 bg-zinc-800 rounded text-gray-400 text-xs font-mono">$</div>
+          <span className="font-mono text-gray-300">npm install -g helios-cli</span>
+          <div className="ml-4 flex items-center gap-2">
+            {copied ? (
+              <span className="text-green-500 text-[10px] font-sans uppercase tracking-[0.2em] font-bold">Copied!</span>
+            ) : (
+              <span className="text-zinc-600 text-[10px] font-sans uppercase tracking-widest group-hover:text-orange-500 transition-colors">Copy</span>
+            )}
+            {copied ? <Check size={12} className="text-green-500" /> : <TerminalIcon size={12} className="text-zinc-600 group-hover:text-orange-500" />}
           </div>
         </div>
       </section>
 
-      {/* Commands Section */}
-      <section className="py-24 border-t border-zinc-800 bg-zinc-900/30">
-        <div className="max-w-screen-2xl mx-auto px-6">
-          <h2 className="text-3xl font-bold text-center mb-4">Quick Commands</h2>
-          <p className="text-zinc-400 text-center max-w-2xl mx-auto mb-16">
-            Get started in seconds with these simple commands.
-          </p>
-
-          <div className="max-w-2xl mx-auto space-y-3">
-            {commands.map((item) => (
-              <div
-                key={item.cmd}
-                className="flex items-center justify-between p-4 bg-zinc-900 border border-zinc-800 rounded-lg"
-              >
-                <code className="text-orange-400 font-mono text-sm">{item.cmd}</code>
-                <span className="text-zinc-500 text-sm">{item.desc}</span>
-              </div>
-            ))}
+      {/* Minimal Footer */}
+      <footer className="border-t border-zinc-900 py-16 px-6">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
+          <div className="flex gap-10 text-zinc-500 text-sm font-medium">
+            <Link href="/docs" className="hover:text-orange-500 transition-colors">Documentation</Link>
+            <a href="https://github.com/akshaynstack/helios" className="hover:text-orange-500 transition-colors">GitHub</a>
+            <Link href="/blog" className="hover:text-orange-500 transition-colors">Engineering</Link>
           </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-24 border-t border-zinc-800">
-        <div className="max-w-screen-2xl mx-auto px-6 text-center">
-          <h2 className="text-3xl font-bold mb-4">Ready to Get Started?</h2>
-          <p className="text-zinc-400 max-w-xl mx-auto mb-8">
-            Install Helios CLI and supercharge your development workflow with AI-powered assistance.
-          </p>
-          <div className="inline-block bg-zinc-900 border border-zinc-800 rounded-lg p-4 font-mono text-sm">
-            <span className="text-zinc-500">$</span>{' '}
-            <span className="text-white">npm install -g helios-cli</span>
-          </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="py-8 border-t border-zinc-800">
-        <div className="max-w-screen-2xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="text-zinc-500 text-sm">
-            Built with ❤️ for <span className="text-zinc-300">BridgeMind Vibeathon</span>
-          </div>
-          <div className="text-zinc-500 text-sm">
-            MIT © <a href="https://github.com/akshaynstack" className="text-zinc-300 hover:text-white">akshaynstack</a>
-          </div>
+          <p className="text-zinc-600 text-xs tracking-wide">© 2026 HELIOS ENGINE. BUILT FOR THE VIBEATHON.</p>
         </div>
       </footer>
     </div>

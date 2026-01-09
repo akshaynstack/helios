@@ -42,6 +42,9 @@ interface ConfigSchema {
     QWEN_EXPIRY: number;
     QWEN_RESOURCE_URL: string;
 
+    // Browserless
+    BROWSERLESS_URL: string;
+
     // UI
     COMPACT_MODE: boolean;
     SHOW_USAGE: boolean;
@@ -72,6 +75,7 @@ export const config = new Conf<ConfigSchema>({
         QWEN_REFRESH_TOKEN: '',
         QWEN_EXPIRY: 0,
         QWEN_RESOURCE_URL: '',
+        BROWSERLESS_URL: '',
         COMPACT_MODE: false,
         SHOW_USAGE: false,
         DEBUG_MODE: false

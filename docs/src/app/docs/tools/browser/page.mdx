@@ -15,6 +15,8 @@ export const tools = [
   { name: 'browser_wait', desc: 'Wait for element', args: 'selector' },
   { name: 'browser_get_text', desc: 'Get element text', args: 'selector' },
   { name: 'browser_evaluate', desc: 'Run JavaScript', args: 'script' },
+  { name: 'browser_report', desc: '🚀 Vibe-Audit: Generate detailed project report', args: 'url, output' },
+  { name: 'browser_autofix', desc: '🔧 Self-healing audit with loop guards', args: 'url, iteration, maxIterations' },
 ];
 
 <div className="overflow-x-auto my-6">
@@ -88,17 +90,55 @@ npx playwright install chromium
 
 ---
 
-## Headless Mode
+## The Global Browser Grid ✨ (Featured)
 
-By default, browser runs in headless mode (no visible window).
+Helios is the **only AI assistant** that lets you offload heavy browser tasks to a dedicated grid.
 
-For debugging, you can request visible mode:
+### 🌐 Browser-as-a-Service
+Integrated support for **Browserless** via Docker. This allows you to:
+- **Save Local Resources**: No heavy Chrome processes on your machine.
+- **Live-Vibe Visuals**: Watch the AI browse and debug in real-time.
+- **Persistence**: Stable environments for long-running tests.
 
-```
-open the browser visibly and go to example.com
-```
+### 🛠️ Setting up the Grid
+1. Run the grid locally: `docker compose up -d`
+2. Connect Helios: `helios config set BROWSERLESS_URL ws://localhost:9222`
 
 ---
+
+## 🚀 Vibe-Audit
+
+Generate a comprehensive quality report for any project:
+```
+generate a detailed vibe-audit for http://localhost:3000
+```
+Includes accessibility checks, performance metrics, and an automated **Vibe Score**.
+
+---
+
+## 🔧 AutoFix (Self-Healing Mode)
+
+The most powerful tool in the Helios arsenal. Ask Helios to auto-fix your project: 
+
+```
+auto-fix my project at http://localhost:3000
+```
+
+### How It Works
+1. **Audit**: Scans the page for SEO, accessibility, and design issues.
+2. **Fix Plan**: Generates a prioritized list of issues with specific fix suggestions.
+3. **Loop with Guards**: Tracks iteration count to prevent infinite loops.
+4. **Stop Conditions**: Automatically stops when:
+   - The target **Vibe Score** is reached (default: 85).
+   - **Max iterations** are reached (default: 3).
+   - A **HARD_STOP** is triggered.
+
+### Credit Protection 💰
+This tool is designed to **protect your API credits**. The AI is instructed to stop when the status is `optimization_complete` or `max_iterations_reached`. It will not loop forever.
+
+---
+
+## Headless Mode
 
 ## Selectors
 

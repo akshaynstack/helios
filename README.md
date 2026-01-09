@@ -29,7 +29,15 @@ Helios leverages the world's fastest tools to give the AI instant context:
 ### 🛡️ 2. Zero-Interruption Proactive Flow
 Helios hates wait times. It proactively installs its own high-performance dependencies (`rg`, `fd`, `mgrep`, `playwright`) **silently in the background**. No more blocking prompts—just pure productivity.
 
-### 🧠 3. The "Engine Power" Analytics
+### 🌐 3. The Global Browser Grid (Featured ✨)
+Helios is the **only AI assistant** that lets you offload heavy browser tasks to a dedicated grid. 
+- **Browser-as-a-Service**: Integrated support for **Browserless** via Docker.
+- **Live-Vibe Visuals**: Watch the AI browse and debug in real-time on port 9222.
+- **Vibe-Audit**: One-click project reports with "Vibe Scoring" and performance metrics.
+
+---
+
+## 🧠 4. The "Engine Power" Analytics
 Helios proves its worth. Every session features a persistent analytics footer showing:
 - **Tokens Saved**: Real metrics on manual effort avoided.
 - **Engine Power**: Optimization % based on advanced tool usage.
