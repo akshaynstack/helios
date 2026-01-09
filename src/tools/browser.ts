@@ -173,6 +173,21 @@ export const tools: Tool[] = [
             },
             required: ['url', 'script']
         }
+    },
+
+    // ============ VIBECODER TOOLS ============
+    {
+        name: 'verify_ui',
+        description: '🔥 Helios Verification: Screenshot local dev server and describe what you see. Perfect for validating UI changes.',
+        parameters: {
+            type: 'object',
+            properties: {
+                url: { type: 'string', description: 'URL to verify (default: http://localhost:3000)' },
+                output: { type: 'string', description: 'Screenshot output path (default: ui-verify.png)' },
+                selector: { type: 'string', description: 'Optional: specific element to focus on' }
+            },
+            required: []
+        }
     }
 ];
 
@@ -373,6 +388,72 @@ export const handlers: Record<string, ToolHandler> = {
             await page.goto(args.url, { waitUntil: 'domcontentloaded' });
             const result = await page.evaluate(args.script);
             return typeof result === 'object' ? JSON.stringify(result, null, 2) : String(result);
+        });
+    },
+
+    // 🔥 VIBECODER TOOL: Verify UI
+    verify_ui: async (args) => {
+        return withBrowser(async (page) => {
+            const url = args.url || 'http://localhost:3000';
+            const output = args.output || 'ui-verify.png';
+
+            try {
+                await page.goto(url, { waitUntil: 'networkidle', timeout: 15000 });
+            } catch (e: any) {
+                if (e.message.includes('ERR_CONNECTION_REFUSED')) {
+                    return `🔥 Helios Verify: No server running at ${url}. Start your dev server first (npm run dev).`;
+                }
+                throw e;
+            }
+
+            // Get page info
+            const title = await page.title();
+            const viewport = page.viewportSize();
+
+            // Take screenshot
+            if (args.selector) {
+                const element = await page.$(args.selector);
+                if (element) {
+                    await element.screenshot({ path: output });
+                } else {
+                    return `🔥 Helios Verify: Element "${args.selector}" not found on page.`;
+                }
+            } else {
+                await page.screenshot({ path: output, fullPage: false });
+            }
+
+            // Analyze page structure
+            const analysis = await page.evaluate(`({
+                title: document.title,
+                h1: document.querySelector('h1')?.textContent?.trim() || '(none)',
+                buttons: document.querySelectorAll('button').length,
+                links: document.querySelectorAll('a').length,
+                images: document.images.length,
+                forms: document.forms.length,
+                hasNav: !!document.querySelector('nav'),
+                hasHeader: !!document.querySelector('header'),
+                hasFooter: !!document.querySelector('footer'),
+                mainColors: [...new Set([...document.querySelectorAll('*')].slice(0, 100).map(el => getComputedStyle(el).backgroundColor).filter(c => c !== 'rgba(0, 0, 0, 0)'))].slice(0, 5)
+            })`);
+
+            return `🔥 Helios UI Verification Complete
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📸 Screenshot saved: ${output}
+🌐 URL: ${url}
+📄 Title: ${title}
+📐 Viewport: ${viewport?.width}x${viewport?.height}
+
+📊 Page Analysis:
+   • H1: ${analysis.h1}
+   • Buttons: ${analysis.buttons}
+   • Links: ${analysis.links}
+   • Images: ${analysis.images}
+   • Forms: ${analysis.forms}
+   • Has Nav: ${analysis.hasNav ? '✅' : '❌'}
+   • Has Header: ${analysis.hasHeader ? '✅' : '❌'}
+   • Has Footer: ${analysis.hasFooter ? '✅' : '❌'}
+
+✅ UI verified! Check ${output} for visual confirmation.`;
         });
     }
 };

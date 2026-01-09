@@ -5,8 +5,8 @@
   --foreground: #ededed;
   --sidebar-bg: #0f0f0f;
   --border-color: #262626;
-  --accent: #3b82f6;
-  --accent-hover: #2563eb;
+  --accent: #E64A19;
+  --accent-hover: #D84315;
 }
 
 html {
@@ -45,7 +45,7 @@ pre code {
 
 /* Selection */
 ::selection {
-  background: rgba(59, 130, 246, 0.3);
+  background: rgba(230, 74, 25, 0.3);
 }
 
 /* Links in prose */
@@ -67,8 +67,8 @@ pre code {
 }
 
 .callout-note {
-  background: rgba(59, 130, 246, 0.1);
-  border-left: 4px solid #3b82f6;
+  background: rgba(230, 74, 25, 0.1);
+  border-left: 4px solid #E64A19;
 }
 
 .callout-warning {
@@ -85,3 +85,4 @@ pre code {
   background: rgba(16, 185, 129, 0.1);
   border-left: 4px solid #10b981;
 }
+

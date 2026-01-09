@@ -47,18 +47,18 @@ export default function Home() {
     <div className="min-h-[calc(100vh-64px)]">
       {/* Hero Section */}
       <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-blue-500/10 via-purple-500/5 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-b from-orange-500/10 via-amber-500/5 to-transparent" />
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-20" />
 
         <div className="relative max-w-screen-2xl mx-auto px-6 py-24 md:py-32">
           <div className="flex flex-col items-center text-center">
             <div className="inline-flex items-center gap-2 bg-zinc-800/50 border border-zinc-700 rounded-full px-4 py-1.5 mb-6">
-              <span className="text-xs font-medium text-blue-400">v0.2.0</span>
+              <span className="text-xs font-medium text-orange-400">v0.2.0</span>
               <span className="text-xs text-zinc-500">•</span>
               <span className="text-xs text-zinc-400">BridgeMind Vibeathon Entry</span>
             </div>
 
-            <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-white via-blue-200 to-purple-400 bg-clip-text text-transparent">
+            <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-white via-orange-200 to-amber-400 bg-clip-text text-transparent">
               Helios Engine
             </h1>
 
@@ -70,7 +70,7 @@ export default function Home() {
             <div className="flex flex-col sm:flex-row gap-4 mb-12">
               <Link
                 href="/docs/installation"
-                className="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-3 rounded-lg transition-colors"
+                className="inline-flex items-center justify-center gap-2 bg-orange-600 hover:bg-orange-700 text-white font-medium px-6 py-3 rounded-lg transition-colors"
               >
                 Get Started
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -102,7 +102,7 @@ export default function Home() {
                 <div className="text-zinc-500">$ npm install -g helios-cli</div>
                 <div className="text-zinc-500 mt-2">$ helios config set OPENROUTER_API_KEY sk-or-...</div>
                 <div className="text-zinc-500 mt-2">$ helios</div>
-                <div className="mt-4 text-blue-400">
+                <div className="mt-4 text-orange-400">
                   ██╗  ██╗███████╗██╗     ██╗ ██████╗ ███████╗<br />
                   ██║  ██║██╔════╝██║     ██║██╔═══██╗██╔════╝<br />
                   ███████║█████╗  ██║     ██║██║   ██║███████╗<br />
@@ -158,7 +158,7 @@ export default function Home() {
                 key={item.cmd}
                 className="flex items-center justify-between p-4 bg-zinc-900 border border-zinc-800 rounded-lg"
               >
-                <code className="text-blue-400 font-mono text-sm">{item.cmd}</code>
+                <code className="text-orange-400 font-mono text-sm">{item.cmd}</code>
                 <span className="text-zinc-500 text-sm">{item.desc}</span>
               </div>
             ))}

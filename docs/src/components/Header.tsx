@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function Header() {
     return (
@@ -6,10 +7,14 @@ export default function Header() {
             <div className="max-w-screen-2xl mx-auto h-full px-6 flex items-center justify-between">
                 <div className="flex items-center gap-8">
                     <Link href="/" className="flex items-center gap-3 group">
-                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg">
-                            H
-                        </div>
-                        <span className="text-xl font-bold text-white group-hover:text-blue-400 transition-colors">
+                        <Image
+                            src="https://raw.githubusercontent.com/akshaynstack/helios/main/assets/icon.png"
+                            alt="Helios"
+                            width={32}
+                            height={32}
+                            className="rounded-lg"
+                        />
+                        <span className="text-xl font-bold text-white group-hover:text-orange-400 transition-colors">
                             Helios
                         </span>
                         <span className="text-xs px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-400">
@@ -45,7 +50,7 @@ export default function Header() {
 
                     <Link
                         href="/docs/installation"
-                        className="hidden sm:inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+                        className="hidden sm:inline-flex items-center gap-2 bg-orange-600 hover:bg-orange-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
                     >
                         Get Started
                     </Link>

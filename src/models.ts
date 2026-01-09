@@ -120,6 +120,17 @@ export function getGoogleModels(): ModelInfo[] {
 }
 
 /**
+ * Get Qwen.ai models (Free tier usually supports these)
+ */
+export function getQwenModels(): ModelInfo[] {
+    return [
+        { id: 'qwen-plus', name: 'Qwen Plus (Balanced)', free: true },
+        { id: 'qwen-max', name: 'Qwen Max (Most Capable)', free: true },
+        { id: 'qwen-turbo', name: 'Qwen Turbo (Fast)', free: true },
+    ];
+}
+
+/**
  * Fetch models for a specific provider
  */
 export async function fetchModelsForProvider(
@@ -147,6 +158,9 @@ export async function fetchModelsForProvider(
                 break;
             case 'google':
                 models = getGoogleModels();
+                break;
+            case 'qwen-free':
+                models = getQwenModels();
                 break;
         }
 

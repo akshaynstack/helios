@@ -220,6 +220,24 @@ mcpCommand
         }
     });
 
+import { QwenAuth } from './auth/qwen.js';
+
+// ... other imports
+
+// ==================== LOGIN COMMAND ====================
+
+const loginCommand = program
+    .command('login')
+    .description('Authenticate with AI providers');
+
+loginCommand
+    .command('qwen')
+    .description('Login to Qwen.ai (Free access)')
+    .action(async () => {
+        const auth = new QwenAuth();
+        await auth.login();
+    });
+
 // ==================== CONFIG COMMAND ====================
 
 program
@@ -240,6 +258,7 @@ program
             console.log('\n' + titleGradient('  ⚙️  Helios Configuration\n'));
 
             const keys: [string, string][] = [
+                ['QWEN_ACCESS_TOKEN', 'Qwen.ai (Free access)'],
                 ['ANTHROPIC_API_KEY', 'Anthropic (Claude)'],
                 ['OPENROUTER_API_KEY', 'OpenRouter (all models)'],
                 ['OPENAI_API_KEY', 'OpenAI'],
@@ -250,26 +269,20 @@ program
                 ['STREAMING', 'Streaming mode']
             ];
 
-            keys.forEach(([k, desc]) => {
-                const val = config.get(k as any);
-                const status = val ? chalk.green('●') : chalk.dim('○');
-                let display: string;
-                if (k === 'MODEL') {
-                    display = String(val || 'google/gemini-2.0-flash-exp:free');
-                } else if (k === 'TIMEOUT') {
-                    display = `${val || 60000}ms`;
-                } else if (k === 'STREAMING') {
-                    display = val ? chalk.green('ON') : chalk.dim('OFF');
-                } else if (val && typeof val === 'string') {
-                    display = '***';
-                } else {
-                    display = chalk.dim('not set');
+            // Print table
+            keys.forEach(([key, label]) => {
+                const val = config.get(key as any);
+                let displayVal = chalk.dim('(not set)');
+                if (val) {
+                    if (key.includes('KEY') || key.includes('TOKEN')) {
+                        displayVal = chalk.green('**********' + val.slice(-4));
+                    } else {
+                        displayVal = chalk.cyan(val.toString());
+                    }
                 }
-                console.log(`  ${status} ${chalk.bold(k)}`);
-                console.log(`    ${chalk.dim(desc)}: ${display}`);
+                console.log(`  ${chalk.white(label.padEnd(25))} ${displayVal}`);
             });
-
-            console.log('\n' + chalk.dim(`  📦 ${tools.length} tools available\n`));
+            console.log();
         } else {
             console.log(chalk.yellow('\nUsage:'));
             console.log('  helios config set ANTHROPIC_API_KEY sk-ant-...');
@@ -361,8 +374,7 @@ function showWelcomeDashboard() {
     const model = config.get('MODEL') || 'google/gemini-2.0-flash-exp:free';
     const mcpServers = getMCPServers();
 
-    // Clear screen and show dashboard
-    console.clear();
+    // Show dashboard (no console.clear to preserve scroll history)
     console.log('\n' + banner);
     console.log('  ' + tagline + '\n');
 
@@ -440,17 +452,61 @@ function exitAlternateScreen() {
     process.stdout.write('\x1b[?1049l');
 }
 
-// Cleanup on exit
+// Global process tracker for cleanup
+const trackedProcesses: Set<number> = new Set();
+
+// Export for use in shell tools
+export function trackProcess(pid: number) {
+    trackedProcesses.add(pid);
+}
+
+export function untrackProcess(pid: number) {
+    trackedProcesses.delete(pid);
+}
+
+// Cleanup on exit - HELIOS SAFE EXIT
 function setupCleanupHandlers() {
-    const cleanup = () => {
+    let isExiting = false;
+
+    const cleanup = async () => {
+        if (isExiting) return;
+        isExiting = true;
+
+        // First, show cursor and exit alternate screen
+        process.stdout.write('\x1b[?25h'); // Show cursor
         exitAlternateScreen();
+
+        // Kill any tracked processes
+        if (trackedProcesses.size > 0) {
+            console.log(chalk.hex('#E64A19')('\n🔥 Helios cleaning up...'));
+            for (const pid of trackedProcesses) {
+                try {
+                    process.kill(pid, 'SIGTERM');
+                    console.log(chalk.dim(`   Stopped process ${pid}`));
+                } catch (e) {
+                    // Process may have already exited
+                }
+            }
+            trackedProcesses.clear();
+        }
+
         process.exit(0);
     };
 
-    process.on('SIGINT', cleanup);
+    // NOTE: SIGINT (Ctrl+C) is NOT handled here - it's handled in chat.ts
+    // to allow cancelling tasks without exiting Helios
     process.on('SIGTERM', cleanup);
+
+    // Handle uncaught errors gracefully
+    process.on('uncaughtException', (err) => {
+        console.error(chalk.red('\n⚠️ Unexpected error:'), err.message);
+        cleanup();
+    });
+
     process.on('exit', () => {
-        exitAlternateScreen();
+        if (!isExiting) {
+            exitAlternateScreen();
+        }
     });
 }
 
@@ -462,8 +518,8 @@ program
             console.log(chalk.dim('→ ' + prompt + '\n'));
             await chat(prompt);
         } else {
-            // Enter fullscreen mode (alternate screen buffer)
-            enterAlternateScreen();
+            // DISABLED: Alternate screen buffer prevents scrolling
+            // enterAlternateScreen();
             setupCleanupHandlers();
 
             // Show cursor for input
@@ -475,8 +531,8 @@ program
             try {
                 await chat();
             } finally {
-                // Restore terminal
-                exitAlternateScreen();
+                // No need to restore - we're not using alternate screen
+                // exitAlternateScreen();
             }
         }
     });

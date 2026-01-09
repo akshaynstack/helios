@@ -16,7 +16,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
             <p className="text-zinc-400 leading-relaxed mb-4">{children}</p>
         ),
         a: ({ href, children }) => (
-            <Link href={href || '#'} className="text-blue-400 hover:text-blue-300 underline underline-offset-2 transition-colors">
+            <Link href={href || '#'} className="text-orange-400 hover:text-orange-300 underline underline-offset-2 transition-colors">
                 {children}
             </Link>
         ),
@@ -38,7 +38,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
             </pre>
         ),
         blockquote: ({ children }) => (
-            <blockquote className="border-l-4 border-blue-500 pl-4 py-2 my-4 bg-blue-500/5 text-zinc-300 italic">
+            <blockquote className="border-l-4 border-orange-500 pl-4 py-2 my-4 bg-orange-500/5 text-zinc-300 italic">
                 {children}
             </blockquote>
         ),

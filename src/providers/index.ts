@@ -59,6 +59,10 @@ export async function getProvider(): Promise<AIProvider> {
             const { OpenAIProvider } = await import('./openai.js');
             return new OpenAIProvider(key);
         }
+        case 'qwen-free': {
+            const { QwenFreeProvider } = await import('./qwen-free.js');
+            return new QwenFreeProvider();
+        }
         case 'openrouter':
         default: {
             const { OpenRouterProvider } = await import('./openrouter.js');

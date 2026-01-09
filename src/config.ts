@@ -36,6 +36,12 @@ interface ConfigSchema {
     // Provider Settings
     ACTIVE_PROVIDER: ProviderType;
 
+    // Qwen Auth
+    QWEN_ACCESS_TOKEN: string;
+    QWEN_REFRESH_TOKEN: string;
+    QWEN_EXPIRY: number;
+    QWEN_RESOURCE_URL: string;
+
     // UI
     COMPACT_MODE: boolean;
     SHOW_USAGE: boolean;
@@ -62,13 +68,17 @@ export const config = new Conf<ConfigSchema>({
         STREAMING: true,
         MCP_SERVERS: [],
         ACTIVE_PROVIDER: 'none',
+        QWEN_ACCESS_TOKEN: '',
+        QWEN_REFRESH_TOKEN: '',
+        QWEN_EXPIRY: 0,
+        QWEN_RESOURCE_URL: '',
         COMPACT_MODE: false,
         SHOW_USAGE: false,
         DEBUG_MODE: false
     }
 });
 
-export type ProviderType = 'custom' | 'openrouter' | 'openai' | 'anthropic' | 'google' | 'none';
+export type ProviderType = 'custom' | 'openrouter' | 'openai' | 'anthropic' | 'google' | 'qwen-free' | 'none';
 
 export function getApiKey(): { key: string; provider: ProviderType; baseUrl?: string } {
     const activeProvider = config.get('ACTIVE_PROVIDER');
@@ -98,6 +108,20 @@ export function getApiKey(): { key: string; provider: ProviderType; baseUrl?: st
     const customUrl = config.get('CUSTOM_BASE_URL');
     const customKey = config.get('CUSTOM_API_KEY');
     if (customUrl && customKey) return { key: customKey, provider: 'custom', baseUrl: customUrl };
+
+    const qwenToken = config.get('QWEN_ACCESS_TOKEN');
+    // If not actively set to another provider, and we have a Qwen token, prefer it OR just allow it to be detected
+    // Usually we prefer paid keys first if auto-detecting, or maybe free last?
+    // Let's verify active provider first (handled above).
+
+    // In auto-detect:
+    // ... custom ...
+    // ... anthropic ...
+
+    // If active is qwen-free
+    if (activeProvider === 'qwen-free') {
+        if (qwenToken) return { key: qwenToken, provider: 'qwen-free' };
+    }
 
     const anthropic = config.get('ANTHROPIC_API_KEY');
     if (anthropic) return { key: anthropic, provider: 'anthropic' };

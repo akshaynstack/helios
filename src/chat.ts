@@ -18,7 +18,7 @@ import { getProvider, withRetry } from './providers/index.js';
 import { checkPermission, createPermissionState, toggleAutoApprove, type PermissionState } from './permissions.js';
 import type { Message, Tool } from './types.js';
 
-const SYSTEM_PROMPT = `You are Helios, a state-of-the-art AI coding assistant with built-in supervision.
+export const SYSTEM_PROMPT = `You are Helios, a state-of-the-art AI coding assistant with built-in supervision.
 
 You have a set of tools that allow you to interact with the user's file system and execute terminal commands.
 
@@ -98,15 +98,42 @@ const warningGradient = gradient(['#ff6b6b', '#feca57']);
 const successGradient = gradient(['#00d2ff', '#3a7bd5']);
 const accentGradient = gradient(['#667eea', '#764ba2']);
 
+// Markdown to terminal formatter
+function formatMarkdown(text: string): string {
+    // Headers (### Header -> bold + colored)
+    text = text.replace(/^### (.+)$/gm, chalk.bold.hex('#E64A19')('▸ $1'));
+    text = text.replace(/^## (.+)$/gm, chalk.bold.hex('#FF8A65')('▸▸ $1'));
+    text = text.replace(/^# (.+)$/gm, chalk.bold.white('━━━ $1 ━━━'));
+
+    // Bold (**text** -> bold white)
+    text = text.replace(/\*\*([^*]+)\*\*/g, chalk.bold.white('$1'));
+
+    // Inline code (`code` -> cyan background)
+    text = text.replace(/`([^`]+)`/g, chalk.bgGray.white(' $1 '));
+
+    // Bullet points (- item -> colored bullet)
+    text = text.replace(/^- (.+)$/gm, chalk.hex('#E64A19')('  • ') + '$1');
+    text = text.replace(/^\* (.+)$/gm, chalk.hex('#E64A19')('  • ') + '$1');
+
+    // Numbered lists
+    text = text.replace(/^(\d+)\. (.+)$/gm, chalk.hex('#E64A19')('  $1. ') + '$2');
+
+    // Tables (| col | -> dim separators)
+    text = text.replace(/\|/g, chalk.dim('│'));
+    text = text.replace(/^[-|]+$/gm, (match) => chalk.dim(match.replace(/-/g, '─')));
+
+    return text;
+}
+
 // ==================== SLASH COMMANDS ====================
 
 interface SlashCommand {
     name: string;
     description: string;
-    handler: (args: string, state: ChatState) => string | Promise<string>;
+    handler: (args: string, state: AgentState) => string | Promise<string>;
 }
 
-interface ChatState {
+export interface AgentState {
     messages: Message[];
     compact: boolean;
     streaming: boolean;
@@ -181,6 +208,13 @@ const SLASH_COMMANDS: SlashCommand[] = [
             // Available providers based on configured API keys
             const availableProviders: Array<{ name: string; value: string; key: string; baseUrl?: string }> = [];
 
+            const qwenToken = config.get('QWEN_ACCESS_TOKEN');
+            availableProviders.push({
+                name: qwenToken ? '🦄 Qwen.ai (Free)' : '🦄 Qwen.ai (Free) [Login Required]',
+                value: 'qwen-free',
+                key: qwenToken || 'needs-login'
+            });
+
             const openrouterKey = config.get('OPENROUTER_API_KEY');
             if (openrouterKey) {
                 availableProviders.push({ name: '🌐 OpenRouter (100+ models)', value: 'openrouter', key: openrouterKey });
@@ -226,6 +260,12 @@ const SLASH_COMMANDS: SlashCommand[] = [
                     choices: availableProviders.map(p => ({ name: p.name, value: p.value }))
                 });
                 selectedProvider = availableProviders.find(p => p.value === providerChoice)!;
+            }
+
+            if (selectedProvider.key === 'needs-login' && selectedProvider.value === 'qwen-free') {
+                console.log(chalk.yellow('\n⚠️  You need to login to Qwen.ai first.'));
+                console.log(chalk.white('Run: ') + chalk.cyan('helios login qwen'));
+                return '';
             }
 
             console.log(chalk.dim(`\nFetching models from ${selectedProvider.value}...`));
@@ -472,7 +512,7 @@ async function showSlashMenu(prefix: string = ''): Promise<string> {
     return choice;
 }
 
-async function handleSlashCommand(cmdName: string, state: ChatState): Promise<string | null> {
+async function handleSlashCommand(cmdName: string, state: AgentState): Promise<string | null> {
     const cmd = SLASH_COMMANDS.find(c => c.name === cmdName);
     if (!cmd) return null;
     const result = await cmd.handler('', state);
@@ -716,7 +756,7 @@ async function ensureUIPreset(presetName: string) {
 
 
 async function runAgentStreaming(
-    state: ChatState,
+    state: AgentState,
     userMessage: string
 ): Promise<void> {
     // Smart UI Auto-Detection
@@ -772,8 +812,18 @@ async function runAgentStreaming(
     while (iterations < maxIterations) {
         iterations++;
 
-        agentSpinner.text = chalk.dim('Thinking...');
+        // 🔥 Helios branding in spinner with time tracking
+        const startTime = Date.now();
+        agentSpinner.text = chalk.hex('#E64A19')('🔥 Helios ') + chalk.dim('thinking...');
         if (!agentSpinner.isSpinning) agentSpinner.start();
+
+        // Update spinner with elapsed time every 3 seconds
+        const spinnerInterval = setInterval(() => {
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            if (elapsed >= 3) {
+                agentSpinner.text = chalk.hex('#E64A19')('🔥 Helios ') + chalk.dim(`processing... (${elapsed}s)`);
+            }
+        }, 1000);
 
         try {
             let fullContent = '';
@@ -786,6 +836,7 @@ async function runAgentStreaming(
                 for await (const chunk of providerInstance.stream(state.messages, providerTools, { timeout, model })) {
                     if (chunk.type === 'text' && chunk.content) {
                         if (!hasStoppedSpinner) {
+                            clearInterval(spinnerInterval);
                             agentSpinner.stop();
                             process.stdout.write(successGradient('\n'));
                             hasStoppedSpinner = true;
@@ -794,6 +845,7 @@ async function runAgentStreaming(
                         fullContent += chunk.content;
                     } else if (chunk.type === 'tool_call' && chunk.toolCall) {
                         if (!hasStoppedSpinner) {
+                            clearInterval(spinnerInterval);
                             agentSpinner.stop();
                             process.stdout.write(successGradient('\n'));
                             hasStoppedSpinner = true;
@@ -803,11 +855,15 @@ async function runAgentStreaming(
                         }
                         pendingToolCalls.push(chunk.toolCall);
                     } else if (chunk.type === 'error') {
+                        clearInterval(spinnerInterval);
                         agentSpinner.stop();
                         console.log(chalk.red(`\nError: ${chunk.error}`));
                         return;
                     }
                 }
+
+                // Ensure interval is cleared after streaming
+                clearInterval(spinnerInterval);
 
                 if (!hasStoppedSpinner) {
                     agentSpinner.stop();
@@ -1041,23 +1097,23 @@ async function runAgentStreaming(
                         await ensureFd(); // Optional
                     }
 
-                    // Execute tool
-                    agentSpinner.text = chalk.yellow(`⚡ ${toolCall.name}`);
+                    // Execute tool - HELIOS ENGINE BRANDING
+                    agentSpinner.text = chalk.hex('#E64A19')(`🔥 Helios → `) + chalk.yellow(toolCall.name);
                     if (absolutePath) {
-                        agentSpinner.text += chalk.dim(` → Target: ${absolutePath}`);
+                        agentSpinner.text += chalk.dim(` ↣ ${absolutePath}`);
                     } else if (args.command) {
-                        agentSpinner.text += chalk.dim(` → Exec: ${args.command}`);
+                        agentSpinner.text += chalk.dim(` ↣ ${args.command}`);
                     }
                     agentSpinner.start();
 
                     const result = await executeTool(toolCall.name, args);
                     agentSpinner.stop();
 
-                    console.log(chalk.yellow(`⚡ ${toolCall.name}`));
+                    console.log(chalk.hex('#E64A19')(`🔥 Helios → `) + chalk.yellow(toolCall.name));
                     if (absolutePath) {
-                        console.log(chalk.dim(`   → Target: ${absolutePath}`));
+                        console.log(chalk.dim(`   ↣ ${absolutePath}`));
                     } else if (args.command) {
-                        console.log(chalk.dim(`   → Exec: ${args.command}`));
+                        console.log(chalk.dim(`   ↣ ${args.command}`));
                     }
 
                     if (!state.compact) {
@@ -1087,17 +1143,32 @@ async function runAgentStreaming(
 
 // ==================== MAIN CHAT ====================
 
-export async function chat(singlePrompt?: string): Promise<void> {
+export async function chat(promptOrState?: string | AgentState) {
     const { key, provider } = getApiKey();
 
-    if (singlePrompt && !key) {
-        console.log(chalk.red('\n✗ No API key configured!'));
-        return;
+    // Determine initial state and mode
+    let initialState: AgentState | undefined;
+    let singlePrompt: string | undefined;
+
+    if (typeof promptOrState === 'string') {
+        singlePrompt = promptOrState;
+    } else if (promptOrState) {
+        initialState = promptOrState;
+    }
+
+    // Check for API key (skip if qwen-free or custom/connected)
+    // getApiKey returns proper provider now, so we can trust 'provider' check
+    if (singlePrompt && !key && provider !== 'qwen-free' && provider !== 'custom') {
+        // Maybe just check if provider is 'none'
+        if (provider === 'none') {
+            console.log(chalk.red('\n✗ No API key configured!'));
+            return;
+        }
     }
 
     const streamingEnabled = config.get('STREAMING') ?? true;
 
-    if (key) {
+    if (provider !== 'none') {
         const streamingStatus = streamingEnabled ? chalk.green('Streaming') : chalk.dim('Non-streaming');
         console.log(chalk.dim(`Using ${provider} • ${streamingStatus} • Supervision: `) + chalk.green('Active'));
         console.log(chalk.dim(`Working Directory: ${process.cwd()}\n`));
@@ -1106,7 +1177,7 @@ export async function chat(singlePrompt?: string): Promise<void> {
     }
     console.log(chalk.dim('Type / for commands, exit to quit\n'));
 
-    const state: ChatState = {
+    const state: AgentState = initialState || {
         messages: [{ role: 'system', content: SYSTEM_PROMPT }],
         compact: config.get('COMPACT_MODE') ?? false,
         streaming: streamingEnabled,
@@ -1116,7 +1187,9 @@ export async function chat(singlePrompt?: string): Promise<void> {
     loopDetector.reset();
 
     // Initialize MCP (connect to servers)
-    await initializeMCP();
+    // Ensure we don't double connect if reusing state? 
+    // safe to call connectAll multiple times usually?
+    await mcpClient.connectAll();
 
     if (singlePrompt) {
         await runAgentStreaming(state, singlePrompt);
@@ -1147,10 +1220,18 @@ export async function chat(singlePrompt?: string): Promise<void> {
             await runAgentStreaming(state, userInput);
 
         } catch (error: any) {
+            // Handle Ctrl+C (SIGINT) - cancel task but STAY in Helios
+            if (error.message?.includes('SIGINT') || error.message?.includes('force closed')) {
+                console.log(chalk.hex('#E64A19')('\n🔥 Task cancelled. Helios is still running.'));
+                console.log(chalk.dim('   Type "exit" or press Ctrl+C again to quit.\n'));
+                continue; // Stay in the loop, don't exit
+            }
             if (error.message?.includes('cancelled')) continue;
             console.log(chalk.red(`Error: ${error.message}`));
         }
     }
 
-    console.log(chalk.dim('\nGoodbye!\n'));
+    // Show Helios exit message
+    console.log('\n' + gradient(['#E64A19', '#FF8A65'])('🔥 Helios exited safely. See you next time!'));
+    console.log(chalk.dim('   All processes cleaned up ✓\n'));
 }

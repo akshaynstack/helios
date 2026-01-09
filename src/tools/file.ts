@@ -150,6 +150,21 @@ export const tools: Tool[] = [
             },
             required: []
         }
+    },
+
+    // ============ VIBECODER TOOLS ============
+    {
+        name: 'impact_check',
+        description: '🔥 Helios Impact Analysis: Before editing, check where a function/variable/class is used across the codebase. Prevents accidentally breaking dependent code.',
+        parameters: {
+            type: 'object',
+            properties: {
+                symbol: { type: 'string', description: 'Function, variable, or class name to search for' },
+                path: { type: 'string', description: 'Directory to search (default: .)' },
+                extensions: { type: 'string', description: 'File extensions to include (default: ts,tsx,js,jsx)' }
+            },
+            required: ['symbol']
+        }
     }
 ];
 
@@ -337,5 +352,88 @@ export const handlers: Record<string, ToolHandler> = {
     file_tree: (args) => {
         // Use reliable native tree generation
         return generateNativeTree(args.path, parseInt(args.depth) || 3);
+    },
+
+    // 🔥 VIBECODER TOOL: Impact Check
+    impact_check: (args) => {
+        const symbol = args.symbol;
+        const searchPath = path.resolve(args.path || '.');
+        const extensions = (args.extensions || 'ts,tsx,js,jsx,py,go,rs,java').split(',').map((e: string) => e.trim());
+
+        const results: { file: string; line: number; content: string }[] = [];
+        const maxDepth = 5;
+        const maxFiles = 100;
+        let filesScanned = 0;
+
+        const walkAndSearch = (dir: string, depth: number) => {
+            if (depth > maxDepth || filesScanned > maxFiles) return;
+
+            try {
+                const items = fs.readdirSync(dir);
+                for (const item of items) {
+                    if (filesScanned > maxFiles) break;
+                    if (item.startsWith('.') || item === 'node_modules' || item === 'dist' || item === '.git') continue;
+
+                    const fullPath = path.join(dir, item);
+                    try {
+                        const stat = fs.statSync(fullPath);
+                        if (stat.isDirectory()) {
+                            walkAndSearch(fullPath, depth + 1);
+                        } else if (stat.isFile()) {
+                            const ext = path.extname(item).slice(1);
+                            if (extensions.includes(ext)) {
+                                filesScanned++;
+                                const content = fs.readFileSync(fullPath, 'utf-8');
+                                const lines = content.split('\n');
+                                lines.forEach((line, idx) => {
+                                    if (line.includes(symbol)) {
+                                        results.push({
+                                            file: path.relative(searchPath, fullPath),
+                                            line: idx + 1,
+                                            content: line.trim().slice(0, 100)
+                                        });
+                                    }
+                                });
+                            }
+                        }
+                    } catch { /* skip inaccessible files */ }
+                }
+            } catch { /* skip inaccessible dirs */ }
+        };
+
+        walkAndSearch(searchPath, 0);
+
+        if (results.length === 0) {
+            return `🔥 Helios Impact Check: "${symbol}"
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ No usage found in ${filesScanned} files scanned.
+Safe to rename/remove!`;
+        }
+
+        const grouped = results.reduce((acc: Record<string, typeof results>, r) => {
+            if (!acc[r.file]) acc[r.file] = [];
+            acc[r.file].push(r);
+            return acc;
+        }, {});
+
+        let output = `🔥 Helios Impact Check: "${symbol}"
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚠️  Found ${results.length} usage(s) in ${Object.keys(grouped).length} file(s):
+
+`;
+
+        for (const [file, usages] of Object.entries(grouped)) {
+            output += `📄 ${file}\n`;
+            for (const u of usages.slice(0, 3)) {
+                output += `   L${u.line}: ${u.content}\n`;
+            }
+            if (usages.length > 3) {
+                output += `   ... and ${usages.length - 3} more\n`;
+            }
+            output += '\n';
+        }
+
+        output += `⚠️  Review these files before making changes to "${symbol}"`;
+        return output;
     }
 };

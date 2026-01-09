@@ -18,6 +18,7 @@ const navigation: NavSection[] = [
         title: 'Getting Started',
         items: [
             { title: 'Introduction', href: '/docs' },
+            { title: 'Why Helios?', href: '/docs/why-helios' },
             { title: 'Installation', href: '/docs/installation' },
             { title: 'Quick Start', href: '/docs/quickstart' },
         ],
@@ -77,7 +78,7 @@ function NavContent({ currentPath, onLinkClick }: { currentPath: string; onLinkC
                                         href={item.href}
                                         onClick={onLinkClick}
                                         className={`block px-3 py-1.5 rounded-md text-sm transition-colors ${isActive
-                                            ? 'bg-blue-500/10 text-blue-400 border-l-2 border-blue-500'
+                                            ? 'bg-orange-500/10 text-orange-400 border-l-2 border-orange-500'
                                             : 'text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/50'
                                             }`}
                                     >
@@ -101,12 +102,12 @@ export default function Sidebar({ currentPath }: { currentPath: string }) {
             {/* Mobile Menu Button */}
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="lg:hidden fixed bottom-6 right-6 z-50 bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-full shadow-lg transition-colors flex items-center gap-2"
+                className="lg:hidden fixed bottom-6 right-6 z-50 bg-orange-600 hover:bg-orange-700 text-white p-3 rounded-full shadow-lg transition-colors flex items-center gap-2"
                 aria-label="Toggle menu"
             >
                 {/* Pulse ring animation */}
                 {!isOpen && (
-                    <span className="absolute inset-0 rounded-full bg-blue-500 animate-ping opacity-75" />
+                    <span className="absolute inset-0 rounded-full bg-orange-500 animate-ping opacity-75" />
                 )}
                 <span className="relative">
                     {isOpen ? (
