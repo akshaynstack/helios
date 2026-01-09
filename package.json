@@ -2,6 +2,7 @@
   "name": "helios-cli",
   "version": "0.2.0",
   "description": "AI Coding Assistant with 130+ Tools, MCP Support, and Multi-Provider Integration - Like Claude Code but supercharged",
+  "icon": "https://raw.githubusercontent.com/akshaynstack/helios/main/assets/icon.png",
   "main": "dist/index.js",
   "type": "module",
   "bin": {

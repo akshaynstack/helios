@@ -54,7 +54,7 @@ export class OpenRouterProvider implements AIProvider {
                 const rawText = await response.text();
                 if (!response.ok) {
                     if (response.status === 404 && rawText.includes('support tool use') && useTools) {
-                        console.log(chalk.dim(`\n[DEBUG] Model '${model}' doesn't support official tools. Retrying without tools (calling fallbacks)...`));
+                        // Silent fallback - no user-facing message
                         return null;
                     }
                     throw new Error(`OpenRouter API error: ${response.status} - ${rawText}`);
@@ -137,7 +137,7 @@ export class OpenRouterProvider implements AIProvider {
                 if (!response.ok) {
                     const errorContent = await response.text();
                     if (response.status === 404 && errorContent.includes('support tool use') && useTools) {
-                        console.log(chalk.dim(`\n[DEBUG] Model '${model}' doesn't support official tools (Streaming). Retrying without tools...`));
+                        // Silent fallback - no user-facing message
                         throw new Error('RETRY_WITHOUT_TOOLS');
                     }
                     yield { type: 'error', error: `OpenRouter API error: ${response.status} - ${errorContent}` };
